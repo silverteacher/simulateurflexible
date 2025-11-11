@@ -137,27 +137,21 @@ function showStep(){
   // Ressource
   html += `<div class="resources"><h3>${s.resources.title}</h3><p>${s.resources.intro}</p>
     <a href="${s.resources.link.url}" target="_blank">📚 ${s.resources.link.text}</a>
-    <button id="readBtn" onclick="showKeywordQuestion()">✅ J'ai bien lu la ressource en ligne</button></div>`;
+    <button id="readBtn" onclick="showQuestion()">✅ J'ai lu la ressource</button></div>`;
   
-  // Zone question MOT-CODE (cachée initialement)
-  html += `<div id="keywordZone" style="display:none;">
+  // Zone question (cachée)
+  html += `<div id="questionZone" style="display:none;">
     <div class="keyword-input">
-      <h4>✅ Question de compréhension :</h4>
+      <h4>Question de compréhension :</h4>
       <p><strong>${s.keyword.q}</strong></p>
       <p class="keyword-hint">${s.keyword.hint}</p>
       <input type="text" id="keyInput" placeholder="Votre réponse...">
-      <button onclick="validateKeyword()">Valider la lecture</button>
+      <button onclick="checkKeyword()">Valider</button>
     </div></div>`;
   
-  // Zone discussion (cachée)
-  if(s.discussion){
-    html += `<div id="discussionZone" style="display:none;">
-      <div class="discussion-box"><h4>💬 Temps d'échange</h4><p>${s.discussion}</p>
-      <button onclick="showActivity()">Continuer vers l'activité →</button></div></div>`;
-  }
-  
-  // Zone activité QCM/DRAG (cachée)
+  // Zone activité (cachée)
   html += `<div id="activityZone" style="display:none;">`;
+  if(s.discussion) html += `<div class="discussion-box"><h4>💬 Temps d'échange</h4><p>${s.discussion}</p></div>`;
   html += `<h3>${s.texte}</h3>`;
   if(s.visuel) html += `<img src="${s.visuel}" alt="">`;
   
@@ -171,7 +165,7 @@ function showStep(){
     html += '<div class="dragspace" id="dragSrc"><strong>À placer :</strong><br></div>';
     html += '<div class="steps-grid" id="dropZones"></div>';
     html += '<button class="reset-btn" onclick="resetDrag()">🔄 Réinitialiser</button>';
-    html += '<button onclick="checkDrag()">Valider mon organisation</button>';
+    html += '<button onclick="checkDrag()">Valider</button>';
   }
   html += '</div>';
   
@@ -180,34 +174,22 @@ function showStep(){
   if(s.dragtask) initDrag(s.dragtask);
 }
 
-// Étape 1 : Afficher la question mot-code
-function showKeywordQuestion(){
+let currentStep;
+function showQuestion(){
   document.getElementById('readBtn').style.display='none';
-  document.getElementById('keywordZone').style.display='block';
+  document.getElementById('questionZone').style.display='block';
   document.getElementById('keyInput').focus();
 }
 
-// Étape 2 : Valider le mot-code
-function validateKeyword(){
+function checkKeyword(){
   const s = steps[state.step];
   const inp = document.getElementById('keyInput').value;
   if(norm(inp) === norm(s.keyword.answer)){
-    document.getElementById('keywordZone').style.display='none';
-    // Si discussion, l'afficher, sinon aller direct à l'activité
-    if(s.discussion){
-      document.getElementById('discussionZone').style.display='block';
-    } else {
-      showActivity();
-    }
+    document.getElementById('questionZone').style.display='none';
+    document.getElementById('activityZone').style.display='block';
   } else {
-    alert("Réponse incorrecte. Relisez la ressource et réessayez.");
+    alert("Réponse incorrecte. Relisez la ressource.");
   }
-}
-
-// Étape 3 : Afficher l'activité (QCM ou drag)
-function showActivity(){
-  if(document.getElementById('discussionZone')) document.getElementById('discussionZone').style.display='none';
-  document.getElementById('activityZone').style.display='block';
 }
 
 function checkQCM(){
@@ -219,7 +201,7 @@ function checkQCM(){
     document.querySelector('#qcmForm button').disabled=true;
     nextStep();
   } else {
-    alert("Essayez encore pour trouver la meilleure réponse !");
+    alert("Réessayez !");
   }
 }
 
@@ -275,7 +257,7 @@ function resetDrag(){
 
 function checkDrag(){
   const filled = dragData.cats.filter(c=>c.item).length;
-  if(filled!==6){ alert("Veuillez placer exactement 6 éléments (un par étape) avant de valider !"); return; }
+  if(filled!==6){ alert("Placez 6 éléments !"); return; }
   const hasPiege = dragData.cats.some(c=>c.item && c.item.cat==='piege');
   const ok = dragData.cats.every(c=>c.item && c.item.cat===c.key);
   if(ok && !hasPiege){
@@ -283,7 +265,7 @@ function checkDrag(){
     document.querySelectorAll('#activityZone button').forEach(b=>b.disabled=true);
     nextStep();
   } else {
-    alert(hasPiege ? "Attention : certaines actions ne sont pas recommandées !" : "Certaines étapes ne sont pas dans le bon ordre !");
+    alert(hasPiege ? "Attention aux pièges !" : "Ordre incorrect !");
   }
 }
 
@@ -293,8 +275,8 @@ function nextStep(){
   updateLetters();
   
   const g = document.getElementById('game');
-  g.innerHTML = `<div class="success-message"><h3>🎉 Bravo ! Lettre "${state.letters[state.letters.length-1]}" débloquée !</h3>
-    <div class="code-display"><p><strong>Code actuel :</strong></p><div class="letters">
+  g.innerHTML = `<div class="success-message"><h3>🎉 Lettre "${state.letters[state.letters.length-1]}" débloquée !</h3>
+    <div class="code-display"><p><strong>Code :</strong></p><div class="letters">
     ${state.letters.map(l=>`<span class="letter">${l}</span>`).join('')}</div></div>
     <button onclick="state.step++; showStep()">Continuer →</button></div>`;
 }
@@ -309,33 +291,32 @@ function goBack(){
 
 function showEnd(){
   updateLetters();
-  const perf = state.score>=12 ? "Transformation exemplaire !" : state.score>=9 ? "Réussite solide" : "Progrès à faire";
+  const perf = state.score>=12 ? "Exemplaire !" : state.score>=9 ? "Solide" : "À améliorer";
   document.getElementById('game').innerHTML = `
-    <h2>🎉 Félicitations, vous avez débloqué toutes les lettres !</h2>
+    <h2>🎉 Terminé !</h2>
     <div class="code-display"><p><strong>Code final : SOUPLE</strong></p>
     <div class="letters">${'SOUPLE'.split('').map(l=>`<span class="letter">${l}</span>`).join('')}</div></div>
-    <p>Votre score : ${state.score}/16 <br><b>${perf}</b></p>
+    <p>Score : ${state.score}/16 - <b>${perf}</b></p>
     <div class="qr-container"><h3>🎁 Découvrez ma récompense !</h3>
-    <p>Scannez ce QR code pour accéder à votre bonus :</p>
     <img src="qr.png" alt="QR Code"></div>
-    <button onclick="exportData()">📥 Exporter votre parcours</button>`;
+    <button onclick="exportData()">📥 Exporter</button>`;
 }
 
 function exportData(){
   const txt = `Score: ${state.score}/16\nParcours: ${state.parcours.join(', ')}\nNotes: ${document.getElementById('notes').value}`;
   const blob = new Blob([txt], {type:"text/plain"});
   const a = document.createElement('a');
-  a.download='Parcours_ClasseFlexible.txt';
+  a.download='Parcours_CF.txt';
   a.href= URL.createObjectURL(blob);
   a.click();
 }
 
 function downloadNotes(){
   const n = document.getElementById('notes').value;
-  if(!n.trim()){ alert("Aucune note à télécharger !"); return; }
+  if(!n.trim()){ alert("Aucune note !"); return; }
   const blob = new Blob([n], {type:"text/plain"});
   const a = document.createElement('a');
-  a.download='Notes_ClasseFlexible.txt';
+  a.download='Notes_CF.txt';
   a.href= URL.createObjectURL(blob);
   a.click();
 }
