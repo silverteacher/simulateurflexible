@@ -5,323 +5,605 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Simulateur Décisionnel : Classe Flexible</title>
 <style>
-body { font-family: Arial, sans-serif; background: #f7f9fa; color: #222; margin:0; padding:20px; font-size: 16px;}
-.container { max-width: 900px; margin: auto; }
-h1, h2 { color: #266698; }
-.letter-box { display: inline-block; width:40px; height:40px; background:#e3eaf4; margin:5px; text-align:center; line-height:40px; border-radius:8px; font-weight:bold; font-size:1.3em; border:1px solid #abbfd3;}
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f9fa; color: #222; margin:0; padding:0; font-size: 18px;}
+.container { max-width: 900px; margin: auto; padding: 20px;}
+h1, h2 { color: #266698; font-size: 2em;}
+h2 { font-size: 1.6em; }
+.progress { margin: 16px 0; font-size: 1.4em; }
+.letter-box { display: inline-block; width:50px; height:50px; background:#e3eaf4; margin:8px; text-align:center; line-height:50px; border-radius:8px; font-weight:600; font-size:1.6em; border:1px solid #abbfd3;}
 .letter-box.unlocked { background:#acd0e0; color:#222;}
-.letter-box.hidden { background:#ccc; color:transparent;}
-.qcm label { display: block; margin: 10px 0; cursor: pointer; padding: 8px; border-radius: 6px;}
+.letter-box.hidden { background:#ccc; color:transparent; user-select: none;}
+.qcm, .dragtask { margin-bottom: 26px; font-size: 1.1em;}
+.qcm label { display: block; margin: 12px 0; cursor: pointer; padding: 8px; border-radius: 6px; transition: background 0.2s;}
 .qcm label:hover { background: #f0f4f8;}
-button { background:#266698; color:#fff; border:none; border-radius:6px; padding:12px 18px; margin:10px 5px 10px 0; cursor:pointer; font-size: 1em;}
+button, .draggable { background:#266698; color:#fff; border:none; border-radius:6px; padding:12px 18px; margin:12px 0; cursor:pointer; font-size: 1.1em;}
 button:disabled { background:#bbb; cursor: not-allowed;}
 button:hover:not(:disabled) { background:#1e5178;}
-.back-btn { background: #6c757d;}
+.back-btn { background: #6c757d; float: left;}
+.back-btn:hover { background: #5a6268;}
 .reset-btn { background: #dc3545; }
-img { max-width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin:10px 0;}
-.dragspace { background:#ececec; padding:15px; border-radius:8px; min-height:70px; display:flex; gap:10px; flex-wrap:wrap; margin:10px 0; border:2px dashed #266698;}
-.draggable { background:#547db2; margin: 4px; padding: 10px; font-size: 0.9em; cursor: move; color: white; border-radius: 4px;}
+.reset-btn:hover:not(:disabled) { background: #c82333;}
+img { max-width: 100%; border-radius: 8px; margin:12px 0;}
+#export { background: #ffdc82; color: #2e2200; }
+#export:hover { background: #ffcf5c;}
+#scoring { font-size:1.3em; margin-top:18px;}
+.dragspace { background:#ececec; padding:16px; border-radius:8px; min-height:80px; display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; border:2px dashed #266698; font-size: 1.05em;}
+.dragspace.single { min-height: 60px; justify-content: center; align-items: center;}
+.draggable { background:#547db2; margin: 4px; padding: 10px 14px; font-size: 0.95em; cursor: move;}
+.draggable:hover { background:#3d5d8f;}
 .resources { background: #e8f4f8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #266698;}
-.resources a { color: #1e5178; text-decoration: none; font-weight: 500; display: block; margin: 12px 0; padding: 12px; background: white; border-radius: 6px;}
+.resources h3 { color: #266698; margin-top:0; font-size: 1.3em;}
+.resources a { color: #1e5178; text-decoration: none; font-weight: 500; display: block; margin: 12px 0; padding: 12px; background: white; border-radius: 6px; border: 1px solid #abbfd3;}
+.resources a:hover { text-decoration: underline; background: #f0f4f8;}
 .keyword-input { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #266698;}
-.keyword-input input { width: 100%; padding: 10px; border: 2px solid #abbfd3; border-radius: 6px; font-size: 1em; margin: 10px 0; box-sizing: border-box;}
-.keyword-hint { color: #666; font-style: italic; margin: 5px 0;}
+.keyword-input h4 { color: #266698; margin-top: 0;}
+.keyword-input input { width: 100%; padding: 12px; border: 2px solid #abbfd3; border-radius: 6px; font-size: 1em; margin: 10px 0; box-sizing: border-box;}
+.keyword-hint { color: #666; font-style: italic; margin: 10px 0; font-size: 0.95em;}
 .discussion-box { background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;}
-.success-message { background: #d4edda; color: #155724; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;}
-.code-display { background: #fff; padding: 15px; border-radius: 8px; margin: 15px 0;}
-.code-display .letters { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;}
-.code-display .letter { width: 50px; height: 50px; background: #acd0e0; border-radius: 8px; text-align: center; line-height: 50px; font-size: 1.8em; font-weight: bold; border: 2px solid #266698;}
-.steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;}
+.discussion-box h4 { color: #856404; margin-top: 0;}
+.notes-area { margin: 20px 0; }
+.notes-area textarea { width: 100%; min-height: 150px; padding: 12px; border: 2px solid #abbfd3; border-radius: 8px; font-size: 1em; font-family: inherit; resize: vertical; box-sizing: border-box;}
+.video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin: 20px 0; border-radius: 8px;}
+.video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%;}
+.continue-btn { background: #28a745; margin-top: 20px;}
+.continue-btn:hover { background: #218838;}
+.button-group { margin-top: 20px; overflow: auto;}
+.steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 20px 0;}
+.success-message { background: #d4edda; color: #155724; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #28a745; text-align: center;}
+.success-message h3 { margin-top: 0; font-size: 1.5em;}
+.code-display { background: #fff; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #28a745;}
+.code-display .letters { display: flex; justify-content: center; gap: 10px; margin-top: 10px; flex-wrap: wrap;}
+.code-display .letter { display: inline-block; width: 60px; height: 60px; background: #acd0e0; border-radius: 8px; text-align: center; line-height: 60px; font-size: 2em; font-weight: bold; border: 2px solid #266698;}
 .qr-container { text-align: center; margin: 30px 0;}
-.qr-container img { max-width: 250px; border: 3px solid #266698; border-radius: 12px; padding: 10px; background: white;}
-textarea { width: 100%; min-height: 120px; padding: 10px; border: 2px solid #abbfd3; border-radius: 8px; font-size: 1em; box-sizing: border-box;}
+.qr-container img { max-width: 300px; border: 3px solid #266698; border-radius: 12px; padding: 10px; background: white;}
+
+@media (max-width: 768px) {
+  body { font-size: 16px; }
+  .container { padding: 15px; }
+  h1 { font-size: 1.6em; }
+  h2 { font-size: 1.3em; }
+  .letter-box { width: 40px; height: 40px; line-height: 40px; font-size: 1.3em; margin: 5px;}
+  .dragspace { padding: 12px; min-height: 60px; }
+  button, .draggable { padding: 10px 14px; font-size: 1em; }
+  .steps-grid { grid-template-columns: 1fr;}
+  .code-display .letter { width: 45px; height: 45px; line-height: 45px; font-size: 1.5em;}
+}
+
+@media (max-width: 480px) {
+  body { font-size: 15px; }
+  h1 { font-size: 1.4em; }
+  .letter-box { width: 35px; height: 35px; line-height: 35px; font-size: 1.1em; margin: 3px;}
+  .code-display .letter { width: 40px; height: 40px; line-height: 40px; font-size: 1.3em;}
+}
 </style>
 </head>
 <body>
 <div class="container">
-<h1>Simulateur : Classe Flexible</h1>
-<div id="progress">Lettres débloquées :</div>
+<h1>Simulateur Décisionnel : Classe Flexible</h1>
+<div class="progress" id="progress">Lettres débloquées :</div>
 <div id="letters"></div>
 <div id="game"></div>
-<div style="margin: 20px 0;">
-  <h3 style="color:#266698;">📝 Notes</h3>
-  <textarea id="notes" placeholder="Vos notes..."></textarea>
-  <button onclick="downloadNotes()">💾 Télécharger</button>
+<div class="notes-area">
+  <h3 style="color:#266698;">📝 Espace de prise de notes</h3>
+  <textarea id="notes" placeholder="Notez ici vos réflexions, idées et observations..."></textarea>
+  <button onclick="downloadNotes()" style="background:#547db2;">💾 Télécharger mes notes</button>
 </div>
+<div id="scoring"></div>
+<div id="exportArea"></div>
 </div>
 
 <script>
-let state = {step: 0, score:0, letters: [], parcours:[]};
+let state = {step: 0, score:0, letters: [], parcours:[], exportID: ""};
 const steps = [
   {
-    titre:"S – Sensibiliser",
-    keyword: {q: "Qu'est-ce qu'un aménagement de classe flexible peut tendre à réduire chez les élèves ?", hint: "(2 mots)", answer: "le stress"},
-    resources: {title: "📚 Ressource", intro: "Consultez cette ressource :", link: {url:"https://www.reseau-canope.fr/actualites/article/amenager-sa-classe-pour-servir-sa-pedagogie", text:"Aménager sa classe (Canopé)"}},
-    texte:"Quel argument est le plus efficace ?",
-    qcm: [{text:"« C'est un projet spécifique. »", correct:false},{text:"« Favorise la collaboration et l'engagement. »", correct:true},{text:"« C'est le XXIe siècle ! »", correct:false}],
+    titre:"S – Sensibiliser l'équipe",
+    keyword: {
+      question: "Qu'est-ce qu'un aménagement de classe flexible peut tendre à réduire chez les élèves ?",
+      hint: "(2 mots attendus)",
+      answer: "le stress"
+    },
+    resources: {
+      title: "📚 Ressource à consulter",
+      intro: "Avant de répondre, consultez cette ressource sur l'importance de l'aménagement de classe :",
+      link: {url:"https://www.reseau-canope.fr/actualites/article/amenager-sa-classe-pour-servir-sa-pedagogie", text:"Aménager sa classe pour servir sa pédagogie (Réseau Canopé)"}
+    },
+    texte:"Un enseignant refuse de bouger les tables de sa classe et remet en cause l'intérêt de la flexibilité. Quel argument est le plus efficace pour engager le dialogue ?",
+    qcm: [
+      {text:"« La classe flexible est gravée dans le marbre, c'est un projet spécifique. »", correct:false},
+      {text:"« La flexibilité favorise la collaboration et l'engagement des élèves. »", correct:true},
+      {text:"« On doit suivre la tendance, c'est le XXIe siècle ! »", correct:false},
+    ],
     visuel:"https://cdn.pixabay.com/photo/2017/01/10/19/05/classroom-1963759_960_720.jpg"
   },
   {
-    titre:"O – Organiser",
-    keyword: {q: "Quel outil pour planifier les tâches peut être utile dans les deux degrés ?", hint: "(4 mots)", answer: "le plan de travail"},
-    resources: {title: "📚 Ressource", intro: "Étapes d'un projet :", link: {url:"https://bloghoptoys.fr/comment-reussir-votre-projet-de-classe-flexible/", text:"Projet classe flexible (Hop'Toys)"}},
-    texte:"Organisez les étapes (une carte par étape) :",
+    titre:"O – Organiser le projet",
+    keyword: {
+      question: "Dans le premier degré, quel outil pour planifier les tâches des élèves peut être utile dans le second degré aussi ?",
+      hint: "(4 mots attendus)",
+      answer: "le plan de travail"
+    },
+    resources: {
+      title: "📚 Ressource à consulter",
+      intro: "Consultez cette ressource pour comprendre les étapes d'un projet de classe flexible :",
+      link: {url:"https://bloghoptoys.fr/comment-reussir-votre-projet-de-classe-flexible/", text:"Comment réussir votre projet de classe flexible ? (Blog Hop'Toys)"}
+    },
+    texte:"Organisez les étapes de démarrage d'une classe flexible dans l'ordre chronologique. Glissez chaque élément dans la bonne position (une seule carte par étape).",
     dragtask: {
       items: [
-         {id:"1", text:"Définir les objectifs", cat:"etape1"},
-         {id:"2", text:"Former l'équipe", cat:"etape2"},
-         {id:"3", text:"Récupérer du matériel", cat:"etape3"},
-         {id:"4", text:"Aménager la classe", cat:"etape4"},
-         {id:"5", text:"Établir des règles", cat:"etape5"},
-         {id:"6", text:"Observer et ajuster", cat:"etape6"},
-         {id:"7", text:"Acheter sans concertation", cat:"piege"},
-         {id:"8", text:"Tout changer d'un coup", cat:"piege"}
+         {id:"1", text:"Réfléchir au projet et définir les objectifs pédagogiques", cat:"etape1"},
+         {id:"2", text:"Former l'équipe et mobiliser les enseignants", cat:"etape2"},
+         {id:"3", text:"Récupérer ou acheter du matériel au fur et à mesure", cat:"etape3"},
+         {id:"4", text:"Aménager la classe avec différentes zones", cat:"etape4"},
+         {id:"5", text:"Établir des règles claires avec les élèves", cat:"etape5"},
+         {id:"6", text:"Observer et ajuster progressivement", cat:"etape6"},
+         {id:"7", text:"Acheter du matériel sans concertation", cat:"piege"},
+         {id:"8", text:"Tout changer d'un coup sans test", cat:"piege"},
       ],
-      cats: [{name: "Étape 1", key:"etape1"},{name: "Étape 2", key:"etape2"},{name: "Étape 3", key:"etape3"},{name: "Étape 4", key:"etape4"},{name: "Étape 5", key:"etape5"},{name: "Étape 6", key:"etape6"}]
+      cats: [
+        {name: "Étape 1", key:"etape1"},
+        {name: "Étape 2", key:"etape2"},
+        {name: "Étape 3", key:"etape3"},
+        {name: "Étape 4", key:"etape4"},
+        {name: "Étape 5", key:"etape5"},
+        {name: "Étape 6", key:"etape6"}
+      ]
     },
     visuel:"https://images.unsplash.com/photo-1523580846011-d3a5bc25702b"
   },
   {
-    titre:"U – Utilité",
-    keyword: {q: "Conseil d'Amélie : doit-on tout changer ?", hint: "(oui ou non)", answer: "non"},
-    discussion: "💬 Discutez des points qui vous ont marqués.",
-    resources: {title: "📚 Ressource vidéo", intro: "Bénéfices pédagogiques :", link: {url:"https://canotech.fr/a/la-classe-flexible-pour-faire-classe-a-tous-les-eleves", text:"Classe flexible (CanoTech)"}},
-    texte:"Avantages documentés :",
-    qcm: [{text:"Motivation des élèves", correct:true},{text:"Meilleur climat", correct:true},{text:"Résultats automatiques", correct:false},{text:"Favorise l'autonomie", correct:true},{text:"Plus de bruit", correct:false}],
+    titre:"U – Utilité pédagogique",
+    keyword: {
+      question: "Quel est le conseil d'Amélie, l'enseignante de lettres pour se lancer : doit-on tout changer dans sa pédagogie ?",
+      hint: "(réponse : oui ou non)",
+      answer: "non"
+    },
+    discussion: "💬 Après avoir visionné cette vidéo, discutez des points qui vous ont marqués.",
+    resources: {
+      title: "📚 Ressource à consulter (vidéo)",
+      intro: "Découvrez les bénéfices pédagogiques de la classe flexible :",
+      link: {url:"https://canotech.fr/a/la-classe-flexible-pour-faire-classe-a-tous-les-eleves", text:"La classe flexible pour faire classe à tous les élèves (CanoTech)"}
+    },
+    texte:"Cochez les avantages pédagogiques documentés de la classe flexible :",
+    qcm: [
+      {text:"Plus grande motivation des élèves", correct:true},
+      {text:"Meilleur climat de classe", correct:true},
+      {text:"Automaticité des résultats élevés", correct:false},
+      {text:"Favorise l'autonomie", correct:true},
+      {text:"Les élèves ne font plus de bruit", correct:false}
+    ],
     visuel:"https://cdn.pixabay.com/photo/2017/09/09/21/13/class-2732253_960_720.jpg"
   },
   {
     titre:"P – Parent inquiet",
-    keyword: {q: "Quel sport pour la métaphore du travail d'équipe (témoignage Anne-Cécile) ?", hint: "(2 mots)", answer: "le curling"},
-    resources: {title: "📚 Ressource", intro: "Impliquer les parents :", link: {url:"https://archiclasse.education.fr/Un-projet-accompagne-est-toujours-un-projet-reussi", text:"Projet accompagné (Archiclasse)"}},
-    texte:"Que montrer en priorité ?",
-    qcm:[{text:"Photos d'élèves concentrés.", correct:true},{text:"Budget mobilier.", correct:false},{text:"Statistiques nationales.", correct:false}],
+    keyword: {
+      question: "Dans l'article d'Archiclasse, dans la partie témoignage d'Anne-Cécile Calléjon, quel sport est utilisé pour créer la métaphore du travail d'équipe ?",
+      hint: "(2 mots attendus)",
+      answer: "le curling"
+    },
+    resources: {
+      title: "📚 Ressource à consulter",
+      intro: "Découvrez comment impliquer et accompagner les parents :",
+      link: {url:"https://archiclasse.education.fr/Un-projet-accompagne-est-toujours-un-projet-reussi", text:"Un projet accompagné : impliquer parents et usagers (Archiclasse)"}
+    },
+    texte:`Un parent vient vous voir, persuadé que la classe flexible « n'est que du désordre ». Que lui montrez-vous en priorité ?`,
+    qcm:[
+      {text:"Des photos d'élèves concentrés en groupe et en autonomie.", correct:true},
+      {text:"Votre budget mobilier.", correct:false},
+      {text:"Des statistiques nationales.", correct:false}
+    ],
     visuel:"https://cdn.pixabay.com/photo/2015/09/18/21/13/classroom-942422_960_720.jpg"
   },
   {
-    titre:"L – Limiter",
-    keyword: {q: "Le professeur laisse ... de l'espace de travail à l'élève BEP.", hint: "(2 mots)", answer: "le choix"},
-    resources: {title: "📚 Ressource", intro: "Adapter et gérer le bruit :", link: {url:"https://www.classe-de-demain.fr/accueil/classe-flexible/comment-adapter-sa-classe-flexible-aux-eleves-aux-besoins-educatifs-particuliers-bep-episode-4", text:"BEP et bruit (Classe de Demain)"}},
-    texte:"Action prioritaire ?",
-    qcm:[{text:"Tapis, panneaux acoustiques.", correct:true},{text:"Fermer la salle.", correct:false},{text:"Accuser l'enseignant.", correct:false}],
+    titre:"L – Limiter les nuisances",
+    keyword: {
+      question: "Quel mot-clef dans cet article pour laisser l'élève à BEP se sentir bien dans la classe ? Le professeur lui laisse ... de son espace de travail.",
+      hint: "(2 mots attendus)",
+      answer: "le choix"
+    },
+    resources: {
+      title: "📚 Ressource à consulter",
+      intro: "Découvrez comment adapter la classe flexible et gérer le bruit :",
+      link: {url:"https://www.classe-de-demain.fr/accueil/classe-flexible/comment-adapter-sa-classe-flexible-aux-eleves-aux-besoins-educatifs-particuliers-bep-episode-4", text:"Adapter sa classe flexible et gérer le bruit (Classe de Demain)"}
+    },
+    texte:`Un collègue d'à côté se plaint du bruit. Quelle action prioritaire ?`,
+    qcm:[
+      {text:"Poser des tapis, panneaux acoustiques, et réguler les déplacements.", correct:true},
+      {text:"Fermer définitivement la salle.", correct:false},
+      {text:"Accuser l'enseignant flexible.", correct:false}
+    ],
     visuel:"https://images.unsplash.com/photo-1524995997946-a1c2e315a42f"
   },
   {
-    titre:"E – Évoluer",
-    keyword: {q: "Planning ... pour répartir les assises ?", hint: "(1 mot)", answer: "hebdomadaire"},
-    resources: {title: "📚 Ressource", intro: "Posture de l'enseignant :", link: {url:"https://bloghoptoys.fr/comment-gerer-les-differentes-assises-de-la-classe/", text:"Assises (Hop'Toys)"}},
-    texte:"Attitudes favorisant la posture de guide :",
-    qcm:[{text:"Encourager l'autonomie", correct:true},{text:"Laisser seuls", correct:false},{text:"Varier les modalités", correct:true},{text:"Varier les assises", correct:true},{text:"Sanctionner", correct:false}],
+    titre:"E – Évoluer dans sa posture",
+    keyword: {
+      question: "Comment Défine fonctionne pour la répartition des élèves sur différentes assises ? Par un planning ...",
+      hint: "(1 mot attendu)",
+      answer: "hebdomadaire"
+    },
+    resources: {
+      title: "📚 Ressource à consulter",
+      intro: "Explorez le changement de posture de l'enseignant :",
+      link: {url:"https://bloghoptoys.fr/comment-gerer-les-differentes-assises-de-la-classe/", text:"Gérer les assises et la posture en classe flexible (Blog Hop'Toys)"}
+    },
+    texte:"Cochez les attitudes professionnelles favorisant la posture de guide :",
+    qcm:[
+      {text:"Encourager l'autonomie et la prise d'initiative", correct:true},
+      {text:"Laisser les élèves seuls face à la tâche", correct:false},
+      {text:"Varier les modalités d'animation", correct:true},
+      {text:"En variant les propositions d'assises aux élèves", correct:true},
+      {text:"Sanctionner ceux qui bougent trop souvent", correct:false}
+    ],
     visuel:"https://cdn.pixabay.com/photo/2018/01/20/08/33/laptop-3095990_960_720.jpg"
   }
 ];
 
-function norm(t){ return t.toLowerCase().trim().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ');}
+function normalizeText(text){
+  return text.toLowerCase().trim().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ');
+}
 
 function updateLetters(){
-  document.getElementById('letters').innerHTML = 'SOUPLE'.split('').map((l,i)=> {
-    const u = state.letters.includes(l);
-    return `<span class="letter-box ${u?'unlocked':'hidden'}">${u?l:'?'}</span>`;
-  }).join('');
-}
-
-function showStep(){
-  updateLetters();
-  const g = document.getElementById('game');
-  if(state.step >= steps.length){ showEnd(); return; }
-  
-  const s = steps[state.step];
-  let html = state.step > 0 ? '<button class="back-btn" onclick="goBack()">← Retour</button>' : '';
-  html += `<h2>${s.titre}</h2>`;
-  
-  // Ressource
-  html += `<div class="resources"><h3>${s.resources.title}</h3><p>${s.resources.intro}</p>
-    <a href="${s.resources.link.url}" target="_blank">📚 ${s.resources.link.text}</a>
-    <button id="readBtn" onclick="showQuestion()">✅ J'ai lu la ressource</button></div>`;
-  
-  // Zone question (cachée)
-  html += `<div id="questionZone" style="display:none;">
-    <div class="keyword-input">
-      <h4>Question de compréhension :</h4>
-      <p><strong>${s.keyword.q}</strong></p>
-      <p class="keyword-hint">${s.keyword.hint}</p>
-      <input type="text" id="keyInput" placeholder="Votre réponse...">
-      <button onclick="checkKeyword()">Valider</button>
-    </div></div>`;
-  
-  // Zone activité (cachée)
-  html += `<div id="activityZone" style="display:none;">`;
-  if(s.discussion) html += `<div class="discussion-box"><h4>💬 Temps d'échange</h4><p>${s.discussion}</p></div>`;
-  html += `<h3>${s.texte}</h3>`;
-  if(s.visuel) html += `<img src="${s.visuel}" alt="">`;
-  
-  if(s.qcm){
-    html += '<form class="qcm" id="qcmForm">';
-    s.qcm.forEach((o,i)=> html += `<label><input type="checkbox" name="q" value="${i}"> ${o.text}</label>`);
-    html += '<button type="button" onclick="checkQCM()">Valider</button></form>';
-  }
-  
-  if(s.dragtask){
-    html += '<div class="dragspace" id="dragSrc"><strong>À placer :</strong><br></div>';
-    html += '<div class="steps-grid" id="dropZones"></div>';
-    html += '<button class="reset-btn" onclick="resetDrag()">🔄 Réinitialiser</button>';
-    html += '<button onclick="checkDrag()">Valider</button>';
-  }
-  html += '</div>';
-  
-  g.innerHTML = html;
-  
-  if(s.dragtask) initDrag(s.dragtask);
-}
-
-let currentStep;
-function showQuestion(){
-  document.getElementById('readBtn').style.display='none';
-  document.getElementById('questionZone').style.display='block';
-  document.getElementById('keyInput').focus();
-}
-
-function checkKeyword(){
-  const s = steps[state.step];
-  const inp = document.getElementById('keyInput').value;
-  if(norm(inp) === norm(s.keyword.answer)){
-    document.getElementById('questionZone').style.display='none';
-    document.getElementById('activityZone').style.display='block';
-  } else {
-    alert("Réponse incorrecte. Relisez la ressource.");
-  }
-}
-
-function checkQCM(){
-  const s = steps[state.step];
-  const checks = Array.from(document.querySelectorAll('#qcmForm input'));
-  let ok = checks.every((c,i)=> c.checked === s.qcm[i].correct);
-  if(ok){
-    state.score += s.qcm.filter(q=>q.correct).length;
-    document.querySelector('#qcmForm button').disabled=true;
-    nextStep();
-  } else {
-    alert("Réessayez !");
-  }
-}
-
-let dragData = {};
-function initDrag(task){
-  dragData = {items: task.items.slice().sort(()=>Math.random()-0.5), cats: task.cats.map(c=>({...c, item:null}))};
-  const src = document.getElementById('dragSrc');
-  dragData.items.forEach(it=>{
-    const d = document.createElement('span');
-    d.className='draggable';
-    d.textContent=it.text;
-    d.draggable=true;
-    d.dataset.id=it.id;
-    d.ondragstart= e=> e.dataTransfer.setData('id',it.id);
-    src.appendChild(d);
-  });
-  
-  const zones = document.getElementById('dropZones');
-  dragData.cats.forEach(cat=>{
-    const z = document.createElement('div');
-    z.className='dragspace';
-    z.innerHTML=`<strong>${cat.name}</strong><br>`;
-    z.dataset.cat=cat.key;
-    z.ondragover=e=>e.preventDefault();
-    z.ondrop=e=>{
-      e.preventDefault();
-      const id = e.dataTransfer.getData('id');
-      const el = document.querySelector(`[data-id="${id}"]`);
-      if(el){
-        if(cat.item){
-          const old = z.querySelector('.draggable');
-          if(old) src.appendChild(old);
-        }
-        dragData.cats.forEach(c=>{ if(c.item && c.item.id===id) c.item=null; });
-        z.appendChild(el);
-        cat.item = dragData.items.find(i=>i.id==id);
-      }
-    };
-    zones.appendChild(z);
+  const container = document.getElementById('letters');
+  if(!container) return;
+  container.innerHTML = '';
+  'SOUPLE'.split('').forEach((l,i)=> {
+    const box = document.createElement('span');
+    const isUnlocked = state.letters.includes(l);
+    box.className = 'letter-box'+(isUnlocked?' unlocked':' hidden');
+    box.textContent = isUnlocked ? l : '?';
+    container.appendChild(box);
   });
 }
 
-function resetDrag(){
-  const src = document.getElementById('dragSrc');
-  dragData.cats.forEach(c=>{
-    if(c.item){
-      const el = document.querySelector(`[data-id="${c.item.id}"]`);
-      if(el) src.appendChild(el);
-      c.item=null;
-    }
-  });
-}
-
-function checkDrag(){
-  const filled = dragData.cats.filter(c=>c.item).length;
-  if(filled!==6){ alert("Placez 6 éléments !"); return; }
-  const hasPiege = dragData.cats.some(c=>c.item && c.item.cat==='piege');
-  const ok = dragData.cats.every(c=>c.item && c.item.cat===c.key);
-  if(ok && !hasPiege){
-    state.score+=2;
-    document.querySelectorAll('#activityZone button').forEach(b=>b.disabled=true);
-    nextStep();
-  } else {
-    alert(hasPiege ? "Attention aux pièges !" : "Ordre incorrect !");
-  }
-}
-
-function nextStep(){
-  state.letters.push("SOUPLE"[state.step]);
-  state.parcours.push(steps[state.step].titre);
-  updateLetters();
+function showCodeMessage(){
+  const content = document.getElementById('game');
+  content.innerHTML = '';
   
-  const g = document.getElementById('game');
-  g.innerHTML = `<div class="success-message"><h3>🎉 Lettre "${state.letters[state.letters.length-1]}" débloquée !</h3>
-    <div class="code-display"><p><strong>Code :</strong></p><div class="letters">
-    ${state.letters.map(l=>`<span class="letter">${l}</span>`).join('')}</div></div>
-    <button onclick="state.step++; showStep()">Continuer →</button></div>`;
+  const successDiv = document.createElement('div');
+  successDiv.className = 'success-message';
+  
+  const letter = "SOUPLE"[state.step];
+  successDiv.innerHTML = `
+    <h3>🎉 Bravo ! Vous avez débloqué la lettre "${letter}"</h3>
+    <div class="code-display">
+      <p><strong>Code actuel :</strong></p>
+      <div class="letters">
+        ${state.letters.map(l => `<span class="letter">${l}</span>`).join('')}
+      </div>
+    </div>
+  `;
+  
+  const continueBtn = document.createElement('button');
+  continueBtn.textContent = "Continuer →";
+  continueBtn.className = 'continue-btn';
+  continueBtn.onclick = ()=> {
+    state.step++;
+    showStep();
+  };
+  
+  successDiv.appendChild(continueBtn);
+  content.appendChild(successDiv);
+}
+
+function addBackButton(container){
+  if(state.step > 0){
+    const backBtn = document.createElement('button');
+    backBtn.textContent = "← Retour";
+    backBtn.className = 'back-btn';
+    backBtn.onclick = goBack;
+    container.insertBefore(backBtn, container.firstChild);
+  }
 }
 
 function goBack(){
-  if(state.step>0){
+  if(state.step > 0){
     state.step--;
-    if(state.letters.length>state.step){ state.letters.pop(); state.parcours.pop(); }
+    if(state.letters.length > state.step){
+      state.letters.pop();
+      state.parcours.pop();
+    }
     showStep();
   }
 }
 
-function showEnd(){
+function showStep(){
   updateLetters();
-  const perf = state.score>=12 ? "Exemplaire !" : state.score>=9 ? "Solide" : "À améliorer";
-  document.getElementById('game').innerHTML = `
-    <h2>🎉 Terminé !</h2>
-    <div class="code-display"><p><strong>Code final : SOUPLE</strong></p>
-    <div class="letters">${'SOUPLE'.split('').map(l=>`<span class="letter">${l}</span>`).join('')}</div></div>
-    <p>Score : ${state.score}/16 - <b>${perf}</b></p>
-    <div class="qr-container"><h3>🎁 Découvrez ma récompense !</h3>
-    <img src="qr.png" alt="QR Code"></div>
-    <button onclick="exportData()">📥 Exporter</button>`;
+  const content = document.getElementById('game');
+  if(!content) return;
+  content.innerHTML = '';
+  
+  if(state.step >= steps.length){
+    showEnd();
+    return;
+  }
+  
+  const s = steps[state.step];
+  addBackButton(content);
+  showResourcesWithKeyword(s, content);
 }
 
-function exportData(){
-  const txt = `Score: ${state.score}/16\nParcours: ${state.parcours.join(', ')}\nNotes: ${document.getElementById('notes').value}`;
-  const blob = new Blob([txt], {type:"text/plain"});
-  const a = document.createElement('a');
-  a.download='Parcours_CF.txt';
-  a.href= URL.createObjectURL(blob);
-  a.click();
+function showResourcesWithKeyword(s, container){
+  const titleDiv = document.createElement('div');
+  titleDiv.innerHTML = `<h2>${s.titre}</h2>`;
+  container.appendChild(titleDiv);
+  
+  const resDiv = document.createElement('div');
+  resDiv.className = 'resources';
+  let html = `<h3>${s.resources.title}</h3>`;
+  if(s.resources.intro){
+    html += `<p>${s.resources.intro}</p>`;
+  }
+  html += `<a href="${s.resources.link.url}" target="_blank">📚 ${s.resources.link.text}</a>`;
+  resDiv.innerHTML = html;
+  container.appendChild(resDiv);
+  
+  if(s.keyword){
+    const keywordDiv = document.createElement('div');
+    keywordDiv.className = 'keyword-input';
+    keywordDiv.innerHTML = `
+      <h4>Question de compréhension :</h4>
+      <p><strong>${s.keyword.question}</strong></p>
+      <p class="keyword-hint">${s.keyword.hint}</p>
+      <input type="text" id="keywordInput" placeholder="Votre réponse...">
+      <button id="validateKeyword">✅ Valider la lecture</button>
+    `;
+    container.appendChild(keywordDiv);
+    
+    setTimeout(() => {
+      const validateBtn = document.getElementById('validateKeyword');
+      const inputField = document.getElementById('keywordInput');
+      
+      if(validateBtn && inputField){
+        validateBtn.onclick = ()=> {
+          const userInput = inputField.value;
+          if(normalizeText(userInput) === normalizeText(s.keyword.answer)){
+            if(s.discussion){
+              keywordDiv.style.display = 'none';
+              const discussionDiv = document.createElement('div');
+              discussionDiv.className = 'discussion-box';
+              discussionDiv.innerHTML = `<h4>💬 Temps d'échange</h4><p>${s.discussion}</p>`;
+              const continueBtn = document.createElement('button');
+              continueBtn.textContent = "Continuer vers l'activité →";
+              continueBtn.className = 'continue-btn';
+              continueBtn.onclick = ()=> showActivity(s, container);
+              discussionDiv.appendChild(continueBtn);
+              container.appendChild(discussionDiv);
+            } else {
+              showActivity(s, container);
+            }
+          } else {
+            alert("Réponse incorrecte. Veuillez relire la ressource et réessayer.");
+          }
+        };
+        
+        inputField.addEventListener('keypress', (e) => {
+          if(e.key === 'Enter'){
+            validateBtn.click();
+          }
+        });
+      }
+    }, 100);
+  }
+}
+
+function showActivity(s, container){
+  container.innerHTML = '';
+  addBackButton(container);
+  
+  const activityDiv = document.createElement('div');
+  activityDiv.innerHTML = `<h2>${s.titre}</h2><div>${s.texte}</div>${s.visuel?`<img src="${s.visuel}" alt="">`:''}`;
+  container.appendChild(activityDiv);
+  
+  if(s.qcm){
+    const qform = document.createElement('form');
+    qform.className = 'qcm';
+    s.qcm.forEach((opt, idx)=>{
+      const lab=document.createElement('label');
+      const cb=document.createElement('input');
+      cb.type = 'checkbox';
+      cb.name = 'qcm'+state.step;
+      cb.value=idx;
+      lab.appendChild(cb);
+      lab.append(' '+opt.text);
+      qform.appendChild(lab);
+    });
+    const valBtn = document.createElement('button');
+    valBtn.textContent = "Valider";
+    valBtn.type = 'button';
+    valBtn.onclick = ()=>validateQCM(s.qcm, qform);
+    qform.appendChild(valBtn);
+    container.appendChild(qform);
+  }
+  
+  if(s.dragtask){
+    drawDragTask(s.dragtask, container);
+  }
+}
+
+function validateQCM(qcm, form){
+  let allCorrect=true;
+  const inputs = Array.from(form.querySelectorAll('input'));
+  
+  inputs.forEach((inp,i)=>{
+    let isChecked = inp.checked;
+    let shouldBeChecked = qcm[i].correct;
+    if(isChecked !== shouldBeChecked) allCorrect = false;
+  });
+  
+  if(allCorrect) {
+    let correctCount = qcm.filter(q=>q.correct).length;
+    state.score += correctCount;
+    form.querySelector('button').disabled = true;
+    validateStep();
+  } else {
+    alert("Essayez encore pour trouver la meilleure réponse !");
+  }
+}
+
+function drawDragTask(task, container){
+  let srcItems=task.items.map(it=>({...it, placed:false}));
+  let cats=task.cats.map(c=>({...c, currentItem: null}));
+  
+  let dragspace = document.createElement('div');
+  dragspace.className = 'dragspace';
+  dragspace.id = 'dragSrc';
+  dragspace.innerHTML = '<strong>À placer :</strong><br>';
+  
+  srcItems.sort(() => Math.random() - 0.5);
+  
+  srcItems.forEach(it=>{
+    let span= document.createElement('span');
+    span.className='draggable';
+    span.textContent=it.text;
+    span.draggable=true;
+    span.dataset.id=it.id;
+    span.ondragstart= e=> e.dataTransfer.setData('id', it.id);
+    dragspace.appendChild(span);
+  });
+  container.appendChild(dragspace);
+
+  let stepsGrid = document.createElement('div');
+  stepsGrid.className = 'steps-grid';
+  
+  cats.forEach(cat=>{
+    let dz=document.createElement('div');
+    dz.className='dragspace single';
+    dz.innerHTML = `<strong>${cat.name}</strong><br>`;
+    dz.dataset.cat = cat.key;
+    
+    dz.ondragover = e=>e.preventDefault();
+    dz.ondrop= e=>{
+      e.preventDefault();
+      let id = e.dataTransfer.getData('id');
+      let item = srcItems.find(o=>o.id==id);
+      let elem = document.querySelector('[data-id="'+id+'"]');
+      
+      if(item && elem){
+        if(cat.currentItem){
+          let oldElem = dz.querySelector('.draggable');
+          if(oldElem){
+            dragspace.appendChild(oldElem);
+            cat.currentItem.placed = false;
+          }
+        }
+        
+        cats.forEach(c=>{
+          if(c.currentItem && c.currentItem.id === item.id) c.currentItem = null;
+        });
+        
+        dz.appendChild(elem);
+        cat.currentItem = item;
+        item.placed = true;
+      }
+    };
+    stepsGrid.appendChild(dz);
+  });
+  container.appendChild(stepsGrid);
+  
+  const btnGroup = document.createElement('div');
+  btnGroup.className = 'button-group';
+  
+  const resetBtn = document.createElement('button');
+  resetBtn.textContent = "🔄 Réinitialiser";
+  resetBtn.className = 'reset-btn';
+  resetBtn.onclick = ()=>{
+    cats.forEach(c=>{
+      if(c.currentItem){
+        let elem = document.querySelector('[data-id="'+c.currentItem.id+'"]');
+        if(elem) dragspace.appendChild(elem);
+        c.currentItem.placed = false;
+        c.currentItem = null;
+      }
+    });
+  };
+  btnGroup.appendChild(resetBtn);
+  
+  const valBtn = document.createElement('button');
+  valBtn.textContent = "Valider mon organisation";
+  valBtn.onclick = ()=>{
+    let filledCount = cats.filter(c=>c.currentItem !== null).length;
+    if(filledCount !== 6){
+      alert("Veuillez placer exactement 6 éléments (un par étape) avant de valider !");
+      return;
+    }
+    
+    let hasPiege = cats.some(c=>c.currentItem && c.currentItem.cat==='piege');
+    let allCorrect = cats.every(c=>c.currentItem && c.currentItem.cat===c.key);
+    
+    if(allCorrect && !hasPiege) {
+      state.score += 2;
+      valBtn.disabled = true;
+      resetBtn.disabled = true;
+      validateStep();
+    } else {
+      if(hasPiege){
+        alert("Attention : certaines actions ne sont pas recommandées pour démarrer une classe flexible. Acheter du matériel sans concertation ou tout changer d'un coup sont des erreurs à éviter. Réessayez !");
+      } else {
+        alert("Certaines étapes ne sont pas dans le bon ordre chronologique. Réessayez !");
+      }
+    }
+  };
+  btnGroup.appendChild(valBtn);
+  container.appendChild(btnGroup);
+}
+
+function validateStep(){
+  const letter="SOUPLE"[state.step];
+  state.letters.push(letter);
+  state.parcours.push(steps[state.step].titre);
+  updateLetters();
+  showCodeMessage();
+}
+
+function showEnd(){
+  updateLetters();
+  let res = document.getElementById('game');
+  if(!res) return;
+  let perf = state.score >= 12 ? "Transformation exemplaire !" : (state.score>=9? "Réussite solide" : "Progrès à faire !");
+  res.innerHTML = `<h2>🎉 Félicitations, vous avez débloqué toutes les lettres !</h2>
+    <div class="code-display">
+      <p><strong>Code final : SOUPLE</strong></p>
+      <div class="letters">
+        ${'SOUPLE'.split('').map(l => `<span class="letter">${l}</span>`).join('')}
+      </div>
+    </div>
+    <div id="scoring">Votre score : ${state.score}/16 <br><b>${perf}</b></div>
+    <div class="qr-container">
+      <h3>🎁 Découvrez votre récompense !</h3>
+      <p>Scannez ce QR code pour accéder à votre bonus :</p>
+      <img src="https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/qr.png" alt="QR Code Récompense">
+    </div>
+    <button id="export">📥 Exporter votre parcours</button>`;
+  
+  document.getElementById('export').onclick = function(){
+    let id = "CF"+Date.now();
+    state.exportID = id;
+    let notes = document.getElementById('notes').value;
+    let txt = `ID: ${id}\nScore: ${state.score}/16\nRésultat: ${perf}\nParcours: ${state.parcours.join(', ')}\n\n=== NOTES ===\n${notes}`;
+    let blob = new Blob([txt], {type:"text/plain"});
+    let a = document.createElement('a');
+    a.download= 'ClasseFlexible_parcours_'+id+'.txt';
+    a.href= URL.createObjectURL(blob);
+    a.click();
+  };
 }
 
 function downloadNotes(){
-  const n = document.getElementById('notes').value;
-  if(!n.trim()){ alert("Aucune note !"); return; }
-  const blob = new Blob([n], {type:"text/plain"});
-  const a = document.createElement('a');
-  a.download='Notes_CF.txt';
+  let notes = document.getElementById('notes').value;
+  if(!notes.trim()){
+    alert("Aucune note à télécharger !");
+    return;
+  }
+  let blob = new Blob([notes], {type:"text/plain"});
+  let a = document.createElement('a');
+  a.download= 'MesNotes_ClasseFlexible.txt';
   a.href= URL.createObjectURL(blob);
   a.click();
 }
 
-window.onload = ()=> showStep();
+window.addEventListener('DOMContentLoaded', function(){
+  updateLetters();
+  showStep();
+});
 </script>
 </body>
 </html>
