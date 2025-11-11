@@ -23,8 +23,7 @@
 
 body { 
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  background-attachment: fixed;
+  background: #FFFFFF;
   color: var(--text); 
   margin:0; 
   padding:20px; 
@@ -38,7 +37,7 @@ body {
   background: white;
   padding: 40px;
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
 }
 
 h1 { 
@@ -439,6 +438,25 @@ img {
   box-shadow: 0 8px 25px rgba(44, 62, 80, 0.2);
 }
 
+footer {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px 0;
+  border-top: 2px solid #ECF0F1;
+  color: #7F8C8D;
+  font-size: 0.9em;
+}
+
+footer a {
+  color: #3498DB;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 768px) {
   body { font-size: 15px; padding: 10px; }
   .container { padding: 25px; border-radius: 15px; }
@@ -472,6 +490,12 @@ img {
 </div>
 <div id="scoring"></div>
 <div id="exportArea"></div>
+
+<footer>
+  <p>Application créée par <strong>Amélie Silvert</strong></p>
+  <p><a href="mailto:amelie.silvert@ac-lille.fr">✉️ amelie.silvert@ac-lille.fr</a></p>
+</footer>
+
 </div>
 
 <script>
@@ -952,7 +976,7 @@ function showEnd(){
     <div class="qr-container">
       <h3>🎁 Découvrez ma récompense !</h3>
       <p>Scannez ce QR code pour accéder à votre bonus :</p>
-      <img src="qrcode.png" alt="QR Code Récompense">
+      <img src="https://silverteacher.github.io/simulateurflexible/qrcode.png" alt="QR Code Récompense">
     </div>
     <button id="export">📥 Exporter votre parcours</button>`;
   
