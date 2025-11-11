@@ -5,88 +5,470 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Simulateur Décisionnel : Classe Flexible</title>
 <style>
-body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f9fa; color: #222; margin:0; padding:0; font-size: 18px;}
-.container { max-width: 900px; margin: auto; padding: 20px;}
-h1, h2 { color: #266698; font-size: 2em;}
-h2 { font-size: 1.6em; }
-.progress { margin: 16px 0; font-size: 1.4em; }
-.letter-box { display: inline-block; width:50px; height:50px; background:#e3eaf4; margin:8px; text-align:center; line-height:50px; border-radius:8px; font-weight:600; font-size:1.6em; border:1px solid #abbfd3;}
-.letter-box.unlocked { background:#acd0e0; color:#222;}
-.letter-box.hidden { background:#ccc; color:transparent; user-select: none;}
-.qcm, .dragtask { margin-bottom: 26px; font-size: 1.1em;}
-.qcm label { display: block; margin: 12px 0; cursor: pointer; padding: 8px; border-radius: 6px; transition: background 0.2s;}
-.qcm label:hover { background: #f0f4f8;}
-button, .draggable { background:#266698; color:#fff; border:none; border-radius:6px; padding:12px 18px; margin:12px 0; cursor:pointer; font-size: 1.1em;}
-button:disabled { background:#bbb; cursor: not-allowed;}
-button:hover:not(:disabled) { background:#1e5178;}
-.back-btn { background: #6c757d; float: left;}
-.back-btn:hover { background: #5a6268;}
-.reset-btn { background: #dc3545; }
-.reset-btn:hover:not(:disabled) { background: #c82333;}
-img { max-width: 100%; border-radius: 8px; margin:12px 0;}
-#export { background: #ffdc82; color: #2e2200; }
-#export:hover { background: #ffcf5c;}
-#scoring { font-size:1.3em; margin-top:18px;}
-.dragspace { background:#ececec; padding:16px; border-radius:8px; min-height:80px; display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; border:2px dashed #266698; font-size: 1.05em;}
-.dragspace.single { min-height: 60px; justify-content: center; align-items: center;}
-.draggable { background:#547db2; margin: 4px; padding: 10px 14px; font-size: 0.95em; cursor: move;}
-.draggable:hover { background:#3d5d8f;}
-.resources { background: #e8f4f8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #266698;}
-.resources h3 { color: #266698; margin-top:0; font-size: 1.3em;}
-.resources a { color: #1e5178; text-decoration: none; font-weight: 500; display: block; margin: 12px 0; padding: 12px; background: white; border-radius: 6px; border: 1px solid #abbfd3;}
-.resources a:hover { text-decoration: underline; background: #f0f4f8;}
-.keyword-input { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #266698;}
-.keyword-input h4 { color: #266698; margin-top: 0;}
-.keyword-input input { width: 100%; padding: 12px; border: 2px solid #abbfd3; border-radius: 6px; font-size: 1em; margin: 10px 0; box-sizing: border-box;}
-.keyword-hint { color: #666; font-style: italic; margin: 10px 0; font-size: 0.95em;}
-.discussion-box { background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;}
-.discussion-box h4 { color: #856404; margin-top: 0;}
-.notes-area { margin: 20px 0; }
-.notes-area textarea { width: 100%; min-height: 150px; padding: 12px; border: 2px solid #abbfd3; border-radius: 8px; font-size: 1em; font-family: inherit; resize: vertical; box-sizing: border-box;}
-.video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin: 20px 0; border-radius: 8px;}
-.video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%;}
-.continue-btn { background: #28a745; margin-top: 20px;}
-.continue-btn:hover { background: #218838;}
-.button-group { margin-top: 20px; overflow: auto;}
-.steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin: 20px 0;}
-.success-message { background: #d4edda; color: #155724; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #28a745; text-align: center;}
-.success-message h3 { margin-top: 0; font-size: 1.5em;}
-.code-display { background: #fff; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid #28a745;}
-.code-display .letters { display: flex; justify-content: center; gap: 10px; margin-top: 10px; flex-wrap: wrap;}
-.code-display .letter { display: inline-block; width: 60px; height: 60px; background: #acd0e0; border-radius: 8px; text-align: center; line-height: 60px; font-size: 2em; font-weight: bold; border: 2px solid #266698;}
-.qr-container { text-align: center; margin: 30px 0;}
-.qr-container img { max-width: 300px; border: 3px solid #266698; border-radius: 12px; padding: 10px; background: white;}
+/* Design moderne avec palette élégante */
+:root {
+  --primary: #2C3E50;
+  --secondary: #3498DB;
+  --accent: #1ABC9C;
+  --success: #27AE60;
+  --warning: #F39C12;
+  --danger: #E74C3C;
+  --light: #ECF0F1;
+  --dark: #34495E;
+  --bg: #F8F9FA;
+  --text: #2C3E50;
+}
+
+* { box-sizing: border-box; }
+
+body { 
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
+  color: var(--text); 
+  margin:0; 
+  padding:20px; 
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.container { 
+  max-width: 900px; 
+  margin: auto; 
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+h1 { 
+  color: var(--primary); 
+  font-size: 2.2em;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--secondary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 { 
+  color: var(--primary); 
+  font-size: 1.8em;
+  font-weight: 600;
+  margin-top: 30px;
+  border-left: 4px solid var(--accent);
+  padding-left: 15px;
+}
+
+h3 {
+  color: var(--dark);
+  font-size: 1.3em;
+  font-weight: 600;
+}
+
+.progress { 
+  margin: 20px 0; 
+  font-size: 1.1em;
+  text-align: center;
+  color: var(--dark);
+  font-weight: 500;
+}
+
+.letter-box { 
+  display: inline-block; 
+  width:50px; 
+  height:50px; 
+  background: linear-gradient(135deg, #E8EAF6, #C5CAE9);
+  margin:6px; 
+  text-align:center; 
+  line-height:50px; 
+  border-radius:12px; 
+  font-weight:700; 
+  font-size:1.5em; 
+  border:2px solid #9FA8DA;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.letter-box.unlocked { 
+  background: linear-gradient(135deg, var(--accent), #16A085);
+  color:#fff;
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(26, 188, 156, 0.4);
+}
+
+.letter-box.hidden { 
+  background: #BDC3C7;
+  color:transparent;
+  user-select: none;
+}
+
+.qcm { 
+  margin: 20px 0; 
+  font-size: 1.05em;
+}
+
+.qcm label { 
+  display: block; 
+  margin: 12px 0; 
+  cursor: pointer; 
+  padding: 15px 20px; 
+  border-radius: 10px; 
+  transition: all 0.3s ease;
+  background: var(--light);
+  border: 2px solid transparent;
+}
+
+.qcm label:hover { 
+  background: #E8F8F5;
+  border-color: var(--accent);
+  transform: translateX(5px);
+}
+
+button { 
+  background: linear-gradient(135deg, var(--secondary), #2980B9);
+  color:#fff; 
+  border:none; 
+  border-radius:10px; 
+  padding:14px 28px; 
+  margin:12px 8px 12px 0; 
+  cursor:pointer; 
+  font-size: 1.05em;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+button:disabled { 
+  background: linear-gradient(135deg, #95A5A6, #7F8C8D);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+button:hover:not(:disabled) { 
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.back-btn { 
+  background: linear-gradient(135deg, #95A5A6, #7F8C8D);
+  float: left;
+}
+
+.back-btn:hover { 
+  background: linear-gradient(135deg, #7F8C8D, #6C7A89);
+}
+
+.reset-btn { 
+  background: linear-gradient(135deg, var(--danger), #C0392B);
+}
+
+.reset-btn:hover:not(:disabled) { 
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+img { 
+  max-width: 100%; 
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: 12px; 
+  margin:15px 0;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+#export { 
+  background: linear-gradient(135deg, var(--warning), #D68910);
+}
+
+#export:hover { 
+  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
+}
+
+#scoring { 
+  font-size:1.3em; 
+  margin-top:20px;
+  text-align: center;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.dragspace { 
+  background: linear-gradient(135deg, #F8F9FA, #E9ECEF);
+  padding:20px; 
+  border-radius:12px; 
+  min-height:80px; 
+  display:flex; 
+  gap:12px; 
+  flex-wrap:wrap; 
+  margin:15px 0; 
+  border:3px dashed var(--secondary);
+  transition: all 0.3s ease;
+}
+
+.dragspace:hover {
+  border-color: var(--accent);
+  background: #F0F8FF;
+}
+
+.dragspace.single { 
+  min-height: 70px; 
+  justify-content: center; 
+  align-items: center;
+}
+
+.draggable { 
+  background: linear-gradient(135deg, var(--secondary), #2980B9);
+  margin: 4px; 
+  padding: 12px 18px; 
+  font-size: 0.95em; 
+  cursor: move;
+  color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+  transition: all 0.2s ease;
+}
+
+.draggable:hover { 
+  background: linear-gradient(135deg, #2980B9, #1F618D);
+  transform: scale(1.05);
+}
+
+.resources { 
+  background: linear-gradient(135deg, #E8F8F5, #D5F4E6);
+  padding: 25px; 
+  border-radius: 12px; 
+  margin: 25px 0; 
+  border-left: 5px solid var(--accent);
+  box-shadow: 0 4px 15px rgba(26, 188, 156, 0.1);
+}
+
+.resources h3 { 
+  color: var(--accent); 
+  margin-top:0; 
+  font-size: 1.3em;
+  font-weight: 700;
+}
+
+.resources a { 
+  color: var(--secondary); 
+  text-decoration: none; 
+  font-weight: 600; 
+  display: block; 
+  margin: 15px 0; 
+  padding: 15px 20px; 
+  background: white; 
+  border-radius: 10px; 
+  border: 2px solid var(--accent);
+  transition: all 0.3s ease;
+}
+
+.resources a:hover { 
+  background: var(--accent);
+  color: white;
+  transform: translateX(5px);
+}
+
+.keyword-input { 
+  background: white; 
+  padding: 25px; 
+  border-radius: 12px; 
+  margin: 25px 0; 
+  border: 3px solid var(--secondary);
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.1);
+}
+
+.keyword-input h4 { 
+  color: var(--secondary); 
+  margin-top: 0;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.keyword-input input { 
+  width: 100%; 
+  padding: 14px 18px; 
+  border: 2px solid #BDC3C7; 
+  border-radius: 10px; 
+  font-size: 1em; 
+  margin: 12px 0;
+  transition: all 0.3s ease;
+}
+
+.keyword-input input:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.keyword-hint { 
+  color: #7F8C8D; 
+  font-style: italic; 
+  margin: 8px 0; 
+  font-size: 0.95em;
+}
+
+.discussion-box { 
+  background: linear-gradient(135deg, #FFF9E6, #FFF3CD);
+  padding: 25px; 
+  border-radius: 12px; 
+  margin: 25px 0; 
+  border-left: 5px solid var(--warning);
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.1);
+}
+
+.discussion-box h4 { 
+  color: #D68910; 
+  margin-top: 0;
+  font-weight: 700;
+}
+
+.notes-area { 
+  margin: 30px 0; 
+  padding: 25px;
+  background: linear-gradient(135deg, #F8F9FA, #ECF0F1);
+  border-radius: 12px;
+}
+
+.notes-area h3 {
+  margin-top: 0;
+}
+
+.notes-area textarea { 
+  width: 100%; 
+  min-height: 150px; 
+  padding: 15px; 
+  border: 2px solid #BDC3C7; 
+  border-radius: 10px; 
+  font-size: 1em; 
+  font-family: inherit; 
+  resize: vertical;
+  transition: all 0.3s ease;
+}
+
+.notes-area textarea:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.continue-btn { 
+  background: linear-gradient(135deg, var(--success), #229954);
+  margin-top: 20px;
+}
+
+.continue-btn:hover { 
+  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+}
+
+.button-group { 
+  margin-top: 20px; 
+  overflow: auto;
+}
+
+.steps-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: 15px; 
+  margin: 20px 0;
+}
+
+.success-message { 
+  background: linear-gradient(135deg, #D5F4E6, #ABEBC6);
+  color: #186A3B; 
+  padding: 30px; 
+  border-radius: 15px; 
+  margin: 25px 0; 
+  border-left: 5px solid var(--success); 
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(39, 174, 96, 0.2);
+}
+
+.success-message h3 { 
+  margin-top: 0; 
+  font-size: 1.6em;
+  color: var(--success);
+}
+
+.code-display { 
+  background: white; 
+  padding: 20px; 
+  border-radius: 12px; 
+  margin: 20px 0; 
+  border: 3px solid var(--success);
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.1);
+}
+
+.code-display .letters { 
+  display: flex; 
+  justify-content: center; 
+  gap: 12px; 
+  margin-top: 15px; 
+  flex-wrap: wrap;
+}
+
+.code-display .letter { 
+  width: 55px; 
+  height: 55px; 
+  background: linear-gradient(135deg, var(--accent), #16A085);
+  border-radius: 12px; 
+  text-align: center; 
+  line-height: 55px; 
+  font-size: 1.8em; 
+  font-weight: bold; 
+  color: white;
+  box-shadow: 0 4px 15px rgba(26, 188, 156, 0.3);
+}
+
+.qr-container { 
+  text-align: center; 
+  margin: 35px 0;
+  padding: 25px;
+  background: linear-gradient(135deg, #F8F9FA, #ECF0F1);
+  border-radius: 12px;
+}
+
+.qr-container img { 
+  max-width: 250px; 
+  border: 4px solid var(--primary); 
+  border-radius: 15px; 
+  padding: 15px; 
+  background: white;
+  box-shadow: 0 8px 25px rgba(44, 62, 80, 0.2);
+}
 
 @media (max-width: 768px) {
-  body { font-size: 16px; }
-  .container { padding: 15px; }
-  h1 { font-size: 1.6em; }
-  h2 { font-size: 1.3em; }
-  .letter-box { width: 40px; height: 40px; line-height: 40px; font-size: 1.3em; margin: 5px;}
-  .dragspace { padding: 12px; min-height: 60px; }
-  button, .draggable { padding: 10px 14px; font-size: 1em; }
+  body { font-size: 15px; padding: 10px; }
+  .container { padding: 25px; border-radius: 15px; }
+  h1 { font-size: 1.8em; }
+  h2 { font-size: 1.4em; }
+  .letter-box { width: 42px; height: 42px; line-height: 42px; font-size: 1.3em; margin: 4px;}
+  .dragspace { padding: 15px; }
+  button { padding: 12px 20px; font-size: 1em; }
   .steps-grid { grid-template-columns: 1fr;}
-  .code-display .letter { width: 45px; height: 45px; line-height: 45px; font-size: 1.5em;}
+  .code-display .letter { width: 48px; height: 48px; line-height: 48px; font-size: 1.5em;}
 }
 
 @media (max-width: 480px) {
-  body { font-size: 15px; }
-  h1 { font-size: 1.4em; }
-  .letter-box { width: 35px; height: 35px; line-height: 35px; font-size: 1.1em; margin: 3px;}
-  .code-display .letter { width: 40px; height: 40px; line-height: 40px; font-size: 1.3em;}
+  body { font-size: 14px; }
+  h1 { font-size: 1.5em; }
+  .letter-box { width: 38px; height: 38px; line-height: 38px; font-size: 1.2em; margin: 3px;}
+  .code-display .letter { width: 42px; height: 42px; line-height: 42px; font-size: 1.3em;}
 }
 </style>
 </head>
 <body>
 <div class="container">
-<h1>Simulateur Décisionnel : Classe Flexible</h1>
+<h1>✨ Simulateur Décisionnel : Classe Flexible</h1>
 <div class="progress" id="progress">Lettres débloquées :</div>
 <div id="letters"></div>
 <div id="game"></div>
 <div class="notes-area">
-  <h3 style="color:#266698;">📝 Espace de prise de notes</h3>
+  <h3 style="color:#2C3E50;">📝 Espace de prise de notes</h3>
   <textarea id="notes" placeholder="Notez ici vos réflexions, idées et observations..."></textarea>
-  <button onclick="downloadNotes()" style="background:#547db2;">💾 Télécharger mes notes</button>
+  <button onclick="downloadNotes()">💾 Télécharger mes notes</button>
 </div>
 <div id="scoring"></div>
 <div id="exportArea"></div>
@@ -340,11 +722,11 @@ function showResourcesWithKeyword(s, container){
     const keywordDiv = document.createElement('div');
     keywordDiv.className = 'keyword-input';
     keywordDiv.innerHTML = `
-      <h4>Question de compréhension :</h4>
+      <h4>✅ Question de compréhension :</h4>
       <p><strong>${s.keyword.question}</strong></p>
       <p class="keyword-hint">${s.keyword.hint}</p>
       <input type="text" id="keywordInput" placeholder="Votre réponse...">
-      <button id="validateKeyword">✅ Valider la lecture</button>
+      <button id="validateKeyword">Valider la lecture</button>
     `;
     container.appendChild(keywordDiv);
     
@@ -568,9 +950,9 @@ function showEnd(){
     </div>
     <div id="scoring">Votre score : ${state.score}/16 <br><b>${perf}</b></div>
     <div class="qr-container">
-      <h3>🎁 Découvrez votre récompense !</h3>
+      <h3>🎁 Découvrez ma récompense !</h3>
       <p>Scannez ce QR code pour accéder à votre bonus :</p>
-      <img src="https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/qr.png" alt="QR Code Récompense">
+      <img src="qr.png" alt="QR Code Récompense">
     </div>
     <button id="export">📥 Exporter votre parcours</button>`;
   
