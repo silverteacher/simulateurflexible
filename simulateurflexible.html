@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur Décisionnel : Classe Flexible</title>
+<style>
+body { font-family: Arial, sans-serif; background: #f7f9fa; color: #222; margin:0; padding:20px; font-size: 16px;}
+.container { max-width: 900px; margin: auto; }
+h1, h2 { color: #266698; }
+.letter-box { display: inline-block; width:40px; height:40px; background:#e3eaf4; margin:5px; text-align:center; line-height:40px; border-radius:8px; font-weight:bold; font-size:1.3em; border:1px solid #abbfd3;}
+.letter-box.unlocked { background:#acd0e0; color:#222;}
+.letter-box.hidden { background:#ccc; color:transparent;}
+.qcm label { display: block; margin: 10px 0; cursor: pointer; padding: 8px; border-radius: 6px;}
+.qcm label:hover { background: #f0f4f8;}
+button { background:#266698; color:#fff; border:none; border-radius:6px; padding:12px 18px; margin:10px 5px 10px 0; cursor:pointer; font-size: 1em;}
+button:disabled { background:#bbb; cursor: not-allowed;}
+button:hover:not(:disabled) { background:#1e5178;}
+.back-btn { background: #6c757d;}
+.reset-btn { background: #dc3545; }
+img { max-width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin:10px 0;}
+.dragspace { background:#ececec; padding:15px; border-radius:8px; min-height:70px; display:flex; gap:10px; flex-wrap:wrap; margin:10px 0; border:2px dashed #266698;}
+.draggable { background:#547db2; margin: 4px; padding: 10px; font-size: 0.9em; cursor: move; color: white; border-radius: 4px;}
+.resources { background: #e8f4f8; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #266698;}
+.resources a { color: #1e5178; text-decoration: none; font-weight: 500; display: block; margin: 12px 0; padding: 12px; background: white; border-radius: 6px;}
+.keyword-input { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #266698;}
+.keyword-input input { width: 100%; padding: 10px; border: 2px solid #abbfd3; border-radius: 6px; font-size: 1em; margin: 10px 0; box-sizing: border-box;}
+.keyword-hint { color: #666; font-style: italic; margin: 5px 0;}
+.discussion-box { background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;}
+.success-message { background: #d4edda; color: #155724; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;}
+.code-display { background: #fff; padding: 15px; border-radius: 8px; margin: 15px 0;}
+.code-display .letters { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;}
+.code-display .letter { width: 50px; height: 50px; background: #acd0e0; border-radius: 8px; text-align: center; line-height: 50px; font-size: 1.8em; font-weight: bold; border: 2px solid #266698;}
+.steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;}
+.qr-container { text-align: center; margin: 30px 0;}
+.qr-container img { max-width: 250px; border: 3px solid #266698; border-radius: 12px; padding: 10px; background: white;}
+textarea { width: 100%; min-height: 120px; padding: 10px; border: 2px solid #abbfd3; border-radius: 8px; font-size: 1em; box-sizing: border-box;}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Simulateur : Classe Flexible</h1>
+<div id="progress">Lettres débloquées :</div>
+<div id="letters"></div>
+<div id="game"></div>
+<div style="margin: 20px 0;">
+  <h3 style="color:#266698;">📝 Notes</h3>
+  <textarea id="notes" placeholder="Vos notes..."></textarea>
+  <button onclick="downloadNotes()">💾 Télécharger</button>
+</div>
+</div>
+
+<script>
+let state = {step: 0, score:0, letters: [], parcours:[]};
+const steps = [
+  {
+    titre:"S – Sensibiliser",
+    keyword: {q: "Qu'est-ce qu'un aménagement de classe flexible peut tendre à réduire chez les élèves ?", hint: "(2 mots)", answer: "le stress"},
+    resources: {title: "📚 Ressource", intro: "Consultez cette ressource :", link: {url:"https://www.reseau-canope.fr/actualites/article/amenager-sa-classe-pour-servir-sa-pedagogie", text:"Aménager sa classe (Canopé)"}},
+    texte:"Quel argument est le plus efficace ?",
+    qcm: [{text:"« C'est un projet spécifique. »", correct:false},{text:"« Favorise la collaboration et l'engagement. »", correct:true},{text:"« C'est le XXIe siècle ! »", correct:false}],
+    visuel:"https://cdn.pixabay.com/photo/2017/01/10/19/05/classroom-1963759_960_720.jpg"
+  },
+  {
+    titre:"O – Organiser",
+    keyword: {q: "Quel outil pour planifier les tâches peut être utile dans les deux degrés ?", hint: "(4 mots)", answer: "le plan de travail"},
+    resources: {title: "📚 Ressource", intro: "Étapes d'un projet :", link: {url:"https://bloghoptoys.fr/comment-reussir-votre-projet-de-classe-flexible/", text:"Projet classe flexible (Hop'Toys)"}},
+    texte:"Organisez les étapes (une carte par étape) :",
+    dragtask: {
+      items: [
+         {id:"1", text:"Définir les objectifs", cat:"etape1"},
+         {id:"2", text:"Former l'équipe", cat:"etape2"},
+         {id:"3", text:"Récupérer du matériel", cat:"etape3"},
+         {id:"4", text:"Aménager la classe", cat:"etape4"},
+         {id:"5", text:"Établir des règles", cat:"etape5"},
+         {id:"6", text:"Observer et ajuster", cat:"etape6"},
+         {id:"7", text:"Acheter sans concertation", cat:"piege"},
+         {id:"8", text:"Tout changer d'un coup", cat:"piege"}
+      ],
+      cats: [{name: "Étape 1", key:"etape1"},{name: "Étape 2", key:"etape2"},{name: "Étape 3", key:"etape3"},{name: "Étape 4", key:"etape4"},{name: "Étape 5", key:"etape5"},{name: "Étape 6", key:"etape6"}]
+    },
+    visuel:"https://images.unsplash.com/photo-1523580846011-d3a5bc25702b"
+  },
+  {
+    titre:"U – Utilité",
+    keyword: {q: "Conseil d'Amélie : doit-on tout changer ?", hint: "(oui ou non)", answer: "non"},
+    discussion: "💬 Discutez des points qui vous ont marqués.",
+    resources: {title: "📚 Ressource vidéo", intro: "Bénéfices pédagogiques :", link: {url:"https://canotech.fr/a/la-classe-flexible-pour-faire-classe-a-tous-les-eleves", text:"Classe flexible (CanoTech)"}},
+    texte:"Avantages documentés :",
+    qcm: [{text:"Motivation des élèves", correct:true},{text:"Meilleur climat", correct:true},{text:"Résultats automatiques", correct:false},{text:"Favorise l'autonomie", correct:true},{text:"Plus de bruit", correct:false}],
+    visuel:"https://cdn.pixabay.com/photo/2017/09/09/21/13/class-2732253_960_720.jpg"
+  },
+  {
+    titre:"P – Parent inquiet",
+    keyword: {q: "Quel sport pour la métaphore du travail d'équipe (témoignage Anne-Cécile) ?", hint: "(2 mots)", answer: "le curling"},
+    resources: {title: "📚 Ressource", intro: "Impliquer les parents :", link: {url:"https://archiclasse.education.fr/Un-projet-accompagne-est-toujours-un-projet-reussi", text:"Projet accompagné (Archiclasse)"}},
+    texte:"Que montrer en priorité ?",
+    qcm:[{text:"Photos d'élèves concentrés.", correct:true},{text:"Budget mobilier.", correct:false},{text:"Statistiques nationales.", correct:false}],
+    visuel:"https://cdn.pixabay.com/photo/2015/09/18/21/13/classroom-942422_960_720.jpg"
+  },
+  {
+    titre:"L – Limiter",
+    keyword: {q: "Le professeur laisse ... de l'espace de travail à l'élève BEP.", hint: "(2 mots)", answer: "le choix"},
+    resources: {title: "📚 Ressource", intro: "Adapter et gérer le bruit :", link: {url:"https://www.classe-de-demain.fr/accueil/classe-flexible/comment-adapter-sa-classe-flexible-aux-eleves-aux-besoins-educatifs-particuliers-bep-episode-4", text:"BEP et bruit (Classe de Demain)"}},
+    texte:"Action prioritaire ?",
+    qcm:[{text:"Tapis, panneaux acoustiques.", correct:true},{text:"Fermer la salle.", correct:false},{text:"Accuser l'enseignant.", correct:false}],
+    visuel:"https://images.unsplash.com/photo-1524995997946-a1c2e315a42f"
+  },
+  {
+    titre:"E – Évoluer",
+    keyword: {q: "Planning ... pour répartir les assises ?", hint: "(1 mot)", answer: "hebdomadaire"},
+    resources: {title: "📚 Ressource", intro: "Posture de l'enseignant :", link: {url:"https://bloghoptoys.fr/comment-gerer-les-differentes-assises-de-la-classe/", text:"Assises (Hop'Toys)"}},
+    texte:"Attitudes favorisant la posture de guide :",
+    qcm:[{text:"Encourager l'autonomie", correct:true},{text:"Laisser seuls", correct:false},{text:"Varier les modalités", correct:true},{text:"Varier les assises", correct:true},{text:"Sanctionner", correct:false}],
+    visuel:"https://cdn.pixabay.com/photo/2018/01/20/08/33/laptop-3095990_960_720.jpg"
+  }
+];
+
+function norm(t){ return t.toLowerCase().trim().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ');}
+
+function updateLetters(){
+  document.getElementById('letters').innerHTML = 'SOUPLE'.split('').map((l,i)=> {
+    const u = state.letters.includes(l);
+    return `<span class="letter-box ${u?'unlocked':'hidden'}">${u?l:'?'}</span>`;
+  }).join('');
+}
+
+function showStep(){
+  updateLetters();
+  const g = document.getElementById('game');
+  if(state.step >= steps.length){ showEnd(); return; }
+  
+  const s = steps[state.step];
+  let html = state.step > 0 ? '<button class="back-btn" onclick="goBack()">← Retour</button>' : '';
+  html += `<h2>${s.titre}</h2>`;
+  
+  // Ressource
+  html += `<div class="resources"><h3>${s.resources.title}</h3><p>${s.resources.intro}</p>
+    <a href="${s.resources.link.url}" target="_blank">📚 ${s.resources.link.text}</a>
+    <button id="readBtn" onclick="showKeywordQuestion()">✅ J'ai bien lu la ressource en ligne</button></div>`;
+  
+  // Zone question MOT-CODE (cachée initialement)
+  html += `<div id="keywordZone" style="display:none;">
+    <div class="keyword-input">
+      <h4>✅ Question de compréhension :</h4>
+      <p><strong>${s.keyword.q}</strong></p>
+      <p class="keyword-hint">${s.keyword.hint}</p>
+      <input type="text" id="keyInput" placeholder="Votre réponse...">
+      <button onclick="validateKeyword()">Valider la lecture</button>
+    </div></div>`;
+  
+  // Zone discussion (cachée)
+  if(s.discussion){
+    html += `<div id="discussionZone" style="display:none;">
+      <div class="discussion-box"><h4>💬 Temps d'échange</h4><p>${s.discussion}</p>
+      <button onclick="showActivity()">Continuer vers l'activité →</button></div></div>`;
+  }
+  
+  // Zone activité QCM/DRAG (cachée)
+  html += `<div id="activityZone" style="display:none;">`;
+  html += `<h3>${s.texte}</h3>`;
+  if(s.visuel) html += `<img src="${s.visuel}" alt="">`;
+  
+  if(s.qcm){
+    html += '<form class="qcm" id="qcmForm">';
+    s.qcm.forEach((o,i)=> html += `<label><input type="checkbox" name="q" value="${i}"> ${o.text}</label>`);
+    html += '<button type="button" onclick="checkQCM()">Valider</button></form>';
+  }
+  
+  if(s.dragtask){
+    html += '<div class="dragspace" id="dragSrc"><strong>À placer :</strong><br></div>';
+    html += '<div class="steps-grid" id="dropZones"></div>';
+    html += '<button class="reset-btn" onclick="resetDrag()">🔄 Réinitialiser</button>';
+    html += '<button onclick="checkDrag()">Valider mon organisation</button>';
+  }
+  html += '</div>';
+  
+  g.innerHTML = html;
+  
+  if(s.dragtask) initDrag(s.dragtask);
+}
+
+// Étape 1 : Afficher la question mot-code
+function showKeywordQuestion(){
+  document.getElementById('readBtn').style.display='none';
+  document.getElementById('keywordZone').style.display='block';
+  document.getElementById('keyInput').focus();
+}
+
+// Étape 2 : Valider le mot-code
+function validateKeyword(){
+  const s = steps[state.step];
+  const inp = document.getElementById('keyInput').value;
+  if(norm(inp) === norm(s.keyword.answer)){
+    document.getElementById('keywordZone').style.display='none';
+    // Si discussion, l'afficher, sinon aller direct à l'activité
+    if(s.discussion){
+      document.getElementById('discussionZone').style.display='block';
+    } else {
+      showActivity();
+    }
+  } else {
+    alert("Réponse incorrecte. Relisez la ressource et réessayez.");
+  }
+}
+
+// Étape 3 : Afficher l'activité (QCM ou drag)
+function showActivity(){
+  if(document.getElementById('discussionZone')) document.getElementById('discussionZone').style.display='none';
+  document.getElementById('activityZone').style.display='block';
+}
+
+function checkQCM(){
+  const s = steps[state.step];
+  const checks = Array.from(document.querySelectorAll('#qcmForm input'));
+  let ok = checks.every((c,i)=> c.checked === s.qcm[i].correct);
+  if(ok){
+    state.score += s.qcm.filter(q=>q.correct).length;
+    document.querySelector('#qcmForm button').disabled=true;
+    nextStep();
+  } else {
+    alert("Essayez encore pour trouver la meilleure réponse !");
+  }
+}
+
+let dragData = {};
+function initDrag(task){
+  dragData = {items: task.items.slice().sort(()=>Math.random()-0.5), cats: task.cats.map(c=>({...c, item:null}))};
+  const src = document.getElementById('dragSrc');
+  dragData.items.forEach(it=>{
+    const d = document.createElement('span');
+    d.className='draggable';
+    d.textContent=it.text;
+    d.draggable=true;
+    d.dataset.id=it.id;
+    d.ondragstart= e=> e.dataTransfer.setData('id',it.id);
+    src.appendChild(d);
+  });
+  
+  const zones = document.getElementById('dropZones');
+  dragData.cats.forEach(cat=>{
+    const z = document.createElement('div');
+    z.className='dragspace';
+    z.innerHTML=`<strong>${cat.name}</strong><br>`;
+    z.dataset.cat=cat.key;
+    z.ondragover=e=>e.preventDefault();
+    z.ondrop=e=>{
+      e.preventDefault();
+      const id = e.dataTransfer.getData('id');
+      const el = document.querySelector(`[data-id="${id}"]`);
+      if(el){
+        if(cat.item){
+          const old = z.querySelector('.draggable');
+          if(old) src.appendChild(old);
+        }
+        dragData.cats.forEach(c=>{ if(c.item && c.item.id===id) c.item=null; });
+        z.appendChild(el);
+        cat.item = dragData.items.find(i=>i.id==id);
+      }
+    };
+    zones.appendChild(z);
+  });
+}
+
+function resetDrag(){
+  const src = document.getElementById('dragSrc');
+  dragData.cats.forEach(c=>{
+    if(c.item){
+      const el = document.querySelector(`[data-id="${c.item.id}"]`);
+      if(el) src.appendChild(el);
+      c.item=null;
+    }
+  });
+}
+
+function checkDrag(){
+  const filled = dragData.cats.filter(c=>c.item).length;
+  if(filled!==6){ alert("Veuillez placer exactement 6 éléments (un par étape) avant de valider !"); return; }
+  const hasPiege = dragData.cats.some(c=>c.item && c.item.cat==='piege');
+  const ok = dragData.cats.every(c=>c.item && c.item.cat===c.key);
+  if(ok && !hasPiege){
+    state.score+=2;
+    document.querySelectorAll('#activityZone button').forEach(b=>b.disabled=true);
+    nextStep();
+  } else {
+    alert(hasPiege ? "Attention : certaines actions ne sont pas recommandées !" : "Certaines étapes ne sont pas dans le bon ordre !");
+  }
+}
+
+function nextStep(){
+  state.letters.push("SOUPLE"[state.step]);
+  state.parcours.push(steps[state.step].titre);
+  updateLetters();
+  
+  const g = document.getElementById('game');
+  g.innerHTML = `<div class="success-message"><h3>🎉 Bravo ! Lettre "${state.letters[state.letters.length-1]}" débloquée !</h3>
+    <div class="code-display"><p><strong>Code actuel :</strong></p><div class="letters">
+    ${state.letters.map(l=>`<span class="letter">${l}</span>`).join('')}</div></div>
+    <button onclick="state.step++; showStep()">Continuer →</button></div>`;
+}
+
+function goBack(){
+  if(state.step>0){
+    state.step--;
+    if(state.letters.length>state.step){ state.letters.pop(); state.parcours.pop(); }
+    showStep();
+  }
+}
+
+function showEnd(){
+  updateLetters();
+  const perf = state.score>=12 ? "Transformation exemplaire !" : state.score>=9 ? "Réussite solide" : "Progrès à faire";
+  document.getElementById('game').innerHTML = `
+    <h2>🎉 Félicitations, vous avez débloqué toutes les lettres !</h2>
+    <div class="code-display"><p><strong>Code final : SOUPLE</strong></p>
+    <div class="letters">${'SOUPLE'.split('').map(l=>`<span class="letter">${l}</span>`).join('')}</div></div>
+    <p>Votre score : ${state.score}/16 <br><b>${perf}</b></p>
+    <div class="qr-container"><h3>🎁 Découvrez ma récompense !</h3>
+    <p>Scannez ce QR code pour accéder à votre bonus :</p>
+    <img src="qr.png" alt="QR Code"></div>
+    <button onclick="exportData()">📥 Exporter votre parcours</button>`;
+}
+
+function exportData(){
+  const txt = `Score: ${state.score}/16\nParcours: ${state.parcours.join(', ')}\nNotes: ${document.getElementById('notes').value}`;
+  const blob = new Blob([txt], {type:"text/plain"});
+  const a = document.createElement('a');
+  a.download='Parcours_ClasseFlexible.txt';
+  a.href= URL.createObjectURL(blob);
+  a.click();
+}
+
+function downloadNotes(){
+  const n = document.getElementById('notes').value;
+  if(!n.trim()){ alert("Aucune note à télécharger !"); return; }
+  const blob = new Blob([n], {type:"text/plain"});
+  const a = document.createElement('a');
+  a.download='Notes_ClasseFlexible.txt';
+  a.href= URL.createObjectURL(blob);
+  a.click();
+}
+
+window.onload = ()=> showStep();
+</script>
+</body>
+</html>
