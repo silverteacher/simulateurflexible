@@ -322,6 +322,12 @@ img {
   color: #D68910; 
   margin-top: 0;
   font-weight: 700;
+  font-size: 1.2em;
+}
+
+.discussion-box p {
+  line-height: 1.8;
+  color: var(--dark);
 }
 
 .notes-area { 
@@ -425,8 +431,14 @@ img {
   text-align: center; 
   margin: 35px 0;
   padding: 25px;
-  background: linear-gradient(135deg, #F8F9FA, #ECF0F1);
+  background: linear-gradient(135deg, #FFF9E6, #FFF3CD);
   border-radius: 12px;
+  border-left: 5px solid var(--warning);
+}
+
+.qr-container h3 {
+  color: var(--warning);
+  margin-top: 0;
 }
 
 .qr-container img { 
@@ -436,6 +448,21 @@ img {
   padding: 15px; 
   background: white;
   box-shadow: 0 8px 25px rgba(44, 62, 80, 0.2);
+  margin: 20px 0;
+}
+
+.qr-instructions {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 20px;
+  border: 2px solid var(--warning);
+  line-height: 1.8;
+  color: var(--dark);
+}
+
+.qr-instructions strong {
+  color: var(--warning);
 }
 
 footer {
@@ -486,14 +513,14 @@ footer a:hover {
 <div class="notes-area">
   <h3 style="color:#2C3E50;">📝 Espace de prise de notes</h3>
   <textarea id="notes" placeholder="Notez ici vos réflexions, idées et observations..."></textarea>
-  <button onclick="downloadNotes()">💾 Télécharger mes notes</button>
+  <button onclick="downloadNotes()">📥 Télécharger mes notes</button>
 </div>
 <div id="scoring"></div>
 <div id="exportArea"></div>
 
 <footer>
   <p>Application créée par <strong>Amélie Silvert</strong></p>
-  <p><a href="mailto:amelie.silvert@ac-lille.fr">✉️ amelie.silvert@ac-lille.fr</a></p>
+  <p><a href="mailto:amelie.silvert@ac-lille.fr">amelie.silvert@ac-lille.fr</a></p>
 </footer>
 
 </div>
@@ -502,7 +529,7 @@ footer a:hover {
 let state = {step: 0, score:0, letters: [], parcours:[], exportID: ""};
 const steps = [
   {
-    titre:"S – Sensibiliser l'équipe",
+    titre:"Sensibiliser l'équipe",
     keyword: {
       question: "Qu'est-ce qu'un aménagement de classe flexible peut tendre à réduire chez les élèves ?",
       hint: "(2 mots attendus)",
@@ -522,7 +549,7 @@ const steps = [
     visuel:"https://cdn.pixabay.com/photo/2017/01/10/19/05/classroom-1963759_960_720.jpg"
   },
   {
-    titre:"O – Organiser le projet",
+    titre:"Organiser le projet",
     keyword: {
       question: "Dans le premier degré, quel outil pour planifier les tâches des élèves peut être utile dans le second degré aussi ?",
       hint: "(4 mots attendus)",
@@ -557,13 +584,13 @@ const steps = [
     visuel:"https://images.unsplash.com/photo-1523580846011-d3a5bc25702b"
   },
   {
-    titre:"U – Utilité pédagogique",
+    titre:"Utilité pédagogique",
     keyword: {
       question: "Quel est le conseil d'Amélie, l'enseignante de lettres pour se lancer : doit-on tout changer dans sa pédagogie ?",
       hint: "(réponse : oui ou non)",
       answer: "non"
     },
-    discussion: "💬 Après avoir visionné cette vidéo, discutez des points qui vous ont marqués.",
+    discussion: "💬 Après avoir visionné cette vidéo, discutez des points qui vous ont marqués. Par exemple, quels sont vos ressentis face à la présentation de la classe d'Amélie.",
     resources: {
       title: "📚 Ressource à consulter (vidéo)",
       intro: "Découvrez les bénéfices pédagogiques de la classe flexible :",
@@ -580,7 +607,7 @@ const steps = [
     visuel:"https://cdn.pixabay.com/photo/2017/09/09/21/13/class-2732253_960_720.jpg"
   },
   {
-    titre:"P – Parent inquiet",
+    titre:"Parent inquiet",
     keyword: {
       question: "Dans l'article d'Archiclasse, dans la partie témoignage d'Anne-Cécile Calléjon, quel sport est utilisé pour créer la métaphore du travail d'équipe ?",
       hint: "(2 mots attendus)",
@@ -600,7 +627,7 @@ const steps = [
     visuel:"https://cdn.pixabay.com/photo/2015/09/18/21/13/classroom-942422_960_720.jpg"
   },
   {
-    titre:"L – Limiter les nuisances",
+    titre:"Limiter les nuisances",
     keyword: {
       question: "Quel mot-clef dans cet article pour laisser l'élève à BEP se sentir bien dans la classe ? Le professeur lui laisse ... de son espace de travail.",
       hint: "(2 mots attendus)",
@@ -620,7 +647,7 @@ const steps = [
     visuel:"https://images.unsplash.com/photo-1524995997946-a1c2e315a42f"
   },
   {
-    titre:"E – Évoluer dans sa posture",
+    titre:"Évoluer dans sa posture",
     keyword: {
       question: "Comment Défine fonctionne pour la répartition des élèves sur différentes assises ? Par un planning ...",
       hint: "(1 mot attendu)",
@@ -738,7 +765,7 @@ function showResourcesWithKeyword(s, container){
   if(s.resources.intro){
     html += `<p>${s.resources.intro}</p>`;
   }
-  html += `<a href="${s.resources.link.url}" target="_blank">📚 ${s.resources.link.text}</a>`;
+  html += `<a href="${s.resources.link.url}" target="_blank">${s.resources.link.text}</a>`;
   resDiv.innerHTML = html;
   container.appendChild(resDiv);
   
@@ -746,7 +773,7 @@ function showResourcesWithKeyword(s, container){
     const keywordDiv = document.createElement('div');
     keywordDiv.className = 'keyword-input';
     keywordDiv.innerHTML = `
-      <h4>✅ Question de compréhension :</h4>
+      <h4>❓ Question de compréhension</h4>
       <p><strong>${s.keyword.question}</strong></p>
       <p class="keyword-hint">${s.keyword.hint}</p>
       <input type="text" id="keywordInput" placeholder="Votre réponse...">
@@ -836,8 +863,10 @@ function validateQCM(qcm, form){
   });
   
   if(allCorrect) {
-    let correctCount = qcm.filter(q=>q.correct).length;
-    state.score += correctCount;
+    let pointsForStep = 3;
+    if(state.step === 2) pointsForStep = 4;
+    
+    state.score += pointsForStep;
     form.querySelector('button').disabled = true;
     validateStep();
   } else {
@@ -936,7 +965,7 @@ function drawDragTask(task, container){
     let allCorrect = cats.every(c=>c.currentItem && c.currentItem.cat===c.key);
     
     if(allCorrect && !hasPiege) {
-      state.score += 2;
+      state.score += 4;
       valBtn.disabled = true;
       resetBtn.disabled = true;
       validateStep();
@@ -964,7 +993,7 @@ function showEnd(){
   updateLetters();
   let res = document.getElementById('game');
   if(!res) return;
-  let perf = state.score >= 12 ? "Transformation exemplaire !" : (state.score>=9? "Réussite solide" : "Progrès à faire !");
+  let perf = state.score >= 16 ? "Transformation exemplaire !" : (state.score>=12? "Réussite solide" : "Progrès à faire !");
   res.innerHTML = `<h2>🎉 Félicitations, vous avez débloqué toutes les lettres !</h2>
     <div class="code-display">
       <p><strong>Code final : SOUPLE</strong></p>
@@ -972,11 +1001,14 @@ function showEnd(){
         ${'SOUPLE'.split('').map(l => `<span class="letter">${l}</span>`).join('')}
       </div>
     </div>
-    <div id="scoring">Votre score : ${state.score}/16 <br><b>${perf}</b></div>
+    <div id="scoring">Votre score : ${state.score}/20 <br><b>${perf}</b></div>
     <div class="qr-container">
-      <h3>🎁 Découvrez ma récompense !</h3>
-      <p>Scannez ce QR code pour accéder à votre bonus :</p>
+      <h3>🎁 Découvrez votre récompense !</h3>
       <img src="https://silverteacher.github.io/simulateurflexible/qrcode.png" alt="QR Code Récompense">
+      <div class="qr-instructions">
+        <p><strong>📋 Instructions pour accéder à la ressource BONUS :</strong></p>
+        <p>Vous pouvez maintenant ouvrir votre enveloppe et récupérer le QR code physique. Les lettres du code découvertes (S-O-U-P-L-E) seront à cocher sur le document pour rendre le QR code actif et accéder à la ressource BONUS exclusive !</p>
+      </div>
     </div>
     <button id="export">📥 Exporter votre parcours</button>`;
   
@@ -984,7 +1016,7 @@ function showEnd(){
     let id = "CF"+Date.now();
     state.exportID = id;
     let notes = document.getElementById('notes').value;
-    let txt = `ID: ${id}\nScore: ${state.score}/16\nRésultat: ${perf}\nParcours: ${state.parcours.join(', ')}\n\n=== NOTES ===\n${notes}`;
+    let txt = `ID: ${id}\nScore: ${state.score}/20\nRésultat: ${perf}\nParcours: ${state.parcours.join(', ')}\n\n=== NOTES ===\n${notes}`;
     let blob = new Blob([txt], {type:"text/plain"});
     let a = document.createElement('a');
     a.download= 'ClasseFlexible_parcours_'+id+'.txt';
