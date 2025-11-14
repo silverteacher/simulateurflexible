@@ -1,1048 +1,864 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simulateur Décisionnel : Classe Flexible</title>
-<style>
-/* Design moderne avec palette élégante */
-:root {
-  --primary: #2C3E50;
-  --secondary: #3498DB;
-  --accent: #1ABC9C;
-  --success: #27AE60;
-  --warning: #F39C12;
-  --danger: #E74C3C;
-  --light: #ECF0F1;
-  --dark: #34495E;
-  --bg: #F8F9FA;
-  --text: #2C3E50;
-}
-
-* { box-sizing: border-box; }
-
-body { 
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-  background: #F5F7FA;
-  color: var(--text); 
-  margin:0; 
-  padding:20px; 
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-.container { 
-  max-width: 900px; 
-  margin: auto; 
-  background: white;
-  padding: 40px;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-}
-
-h1 { 
-  color: var(--primary); 
-  font-size: 2.2em;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 10px;
-  background: linear-gradient(135deg, var(--secondary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-h2 { 
-  color: var(--primary); 
-  font-size: 1.8em;
-  font-weight: 600;
-  margin-top: 30px;
-  border-left: 4px solid var(--accent);
-  padding-left: 15px;
-}
-
-h3 {
-  color: var(--dark);
-  font-size: 1.3em;
-  font-weight: 600;
-}
-
-.progress { 
-  margin: 20px 0; 
-  font-size: 1.1em;
-  text-align: center;
-  color: var(--dark);
-  font-weight: 500;
-}
-
-.letter-box { 
-  display: inline-block; 
-  width:50px; 
-  height:50px; 
-  background: linear-gradient(135deg, #E8EAF6, #C5CAE9);
-  margin:6px; 
-  text-align:center; 
-  line-height:50px; 
-  border-radius:12px; 
-  font-weight:700; 
-  font-size:1.5em; 
-  border:2px solid #9FA8DA;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.letter-box.unlocked { 
-  background: linear-gradient(135deg, var(--accent), #16A085);
-  color:#fff;
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(26, 188, 156, 0.4);
-}
-
-.letter-box.hidden { 
-  background: #BDC3C7;
-  color:transparent;
-  user-select: none;
-}
-
-.qcm { 
-  margin: 20px 0; 
-  font-size: 1.05em;
-}
-
-.qcm label { 
-  display: block; 
-  margin: 12px 0; 
-  cursor: pointer; 
-  padding: 15px 20px; 
-  border-radius: 10px; 
-  transition: all 0.3s ease;
-  background: var(--light);
-  border: 2px solid transparent;
-}
-
-.qcm label:hover { 
-  background: #E8F8F5;
-  border-color: var(--accent);
-  transform: translateX(5px);
-}
-
-button { 
-  background: linear-gradient(135deg, var(--secondary), #2980B9);
-  color:#fff; 
-  border:none; 
-  border-radius:10px; 
-  padding:14px 28px; 
-  margin:12px 8px 12px 0; 
-  cursor:pointer; 
-  font-size: 1.05em;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-}
-
-button:disabled { 
-  background: linear-gradient(135deg, #95A5A6, #7F8C8D);
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-button:hover:not(:disabled) { 
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
-}
-
-.back-btn { 
-  background: linear-gradient(135deg, #95A5A6, #7F8C8D);
-  float: left;
-}
-
-.back-btn:hover { 
-  background: linear-gradient(135deg, #7F8C8D, #6C7A89);
-}
-
-.reset-btn { 
-  background: linear-gradient(135deg, var(--danger), #C0392B);
-}
-
-.reset-btn:hover:not(:disabled) { 
-  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
-}
-
-img { 
-  max-width: 100%; 
-  max-height: 280px;
-  object-fit: cover;
-  border-radius: 12px; 
-  margin:15px 0;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-}
-
-#export { 
-  background: linear-gradient(135deg, var(--warning), #D68910);
-}
-
-#export:hover { 
-  box-shadow: 0 6px 20px rgba(243, 156, 18, 0.4);
-}
-
-#scoring { 
-  font-size:1.3em; 
-  margin-top:20px;
-  text-align: center;
-  color: var(--primary);
-  font-weight: 600;
-}
-
-.dragspace { 
-  background: linear-gradient(135deg, #F8F9FA, #E9ECEF);
-  padding:20px; 
-  border-radius:12px; 
-  min-height:80px; 
-  display:flex; 
-  gap:12px; 
-  flex-wrap:wrap; 
-  margin:15px 0; 
-  border:3px dashed var(--secondary);
-  transition: all 0.3s ease;
-}
-
-.dragspace:hover {
-  border-color: var(--accent);
-  background: #F0F8FF;
-}
-
-.dragspace.single { 
-  min-height: 70px; 
-  justify-content: center; 
-  align-items: center;
-}
-
-.draggable { 
-  background: linear-gradient(135deg, var(--secondary), #2980B9);
-  margin: 4px; 
-  padding: 12px 18px; 
-  font-size: 0.95em; 
-  cursor: move;
-  color: white;
-  border-radius: 8px;
-  font-weight: 500;
-  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
-  transition: all 0.2s ease;
-}
-
-.draggable:hover { 
-  background: linear-gradient(135deg, #2980B9, #1F618D);
-  transform: scale(1.05);
-}
-
-.resources { 
-  background: linear-gradient(135deg, #E8F8F5, #D5F4E6);
-  padding: 25px; 
-  border-radius: 12px; 
-  margin: 25px 0; 
-  border-left: 5px solid var(--accent);
-  box-shadow: 0 4px 15px rgba(26, 188, 156, 0.1);
-}
-
-.resources h3 { 
-  color: var(--accent); 
-  margin-top:0; 
-  font-size: 1.3em;
-  font-weight: 700;
-}
-
-.resources a { 
-  color: var(--secondary); 
-  text-decoration: none; 
-  font-weight: 600; 
-  display: block; 
-  margin: 15px 0; 
-  padding: 15px 20px; 
-  background: white; 
-  border-radius: 10px; 
-  border: 2px solid var(--accent);
-  transition: all 0.3s ease;
-}
-
-.resources a:hover { 
-  background: var(--accent);
-  color: white;
-  transform: translateX(5px);
-}
-
-.keyword-input { 
-  background: white; 
-  padding: 25px; 
-  border-radius: 12px; 
-  margin: 25px 0; 
-  border: 3px solid var(--secondary);
-  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.1);
-}
-
-.keyword-input h4 { 
-  color: var(--secondary); 
-  margin-top: 0;
-  font-size: 1.2em;
-  font-weight: 600;
-}
-
-.keyword-input input { 
-  width: 100%; 
-  padding: 14px 18px; 
-  border: 2px solid #BDC3C7; 
-  border-radius: 10px; 
-  font-size: 1em; 
-  margin: 12px 0;
-  transition: all 0.3s ease;
-}
-
-.keyword-input input:focus {
-  outline: none;
-  border-color: var(--secondary);
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-}
-
-.keyword-hint { 
-  color: #7F8C8D; 
-  font-style: italic; 
-  margin: 8px 0; 
-  font-size: 0.95em;
-}
-
-.discussion-box { 
-  background: linear-gradient(135deg, #FFF9E6, #FFF3CD);
-  padding: 25px; 
-  border-radius: 12px; 
-  margin: 25px 0; 
-  border-left: 5px solid var(--warning);
-  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.1);
-}
-
-.discussion-box h4 { 
-  color: #D68910; 
-  margin-top: 0;
-  font-weight: 700;
-  font-size: 1.2em;
-}
-
-.discussion-box p {
-  line-height: 1.8;
-  color: var(--dark);
-}
-
-.notes-area { 
-  margin: 30px 0; 
-  padding: 25px;
-  background: linear-gradient(135deg, #F8F9FA, #ECF0F1);
-  border-radius: 12px;
-}
-
-.notes-area h3 {
-  margin-top: 0;
-}
-
-.notes-area textarea { 
-  width: 100%; 
-  min-height: 150px; 
-  padding: 15px; 
-  border: 2px solid #BDC3C7; 
-  border-radius: 10px; 
-  font-size: 1em; 
-  font-family: inherit; 
-  resize: vertical;
-  transition: all 0.3s ease;
-}
-
-.notes-area textarea:focus {
-  outline: none;
-  border-color: var(--secondary);
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-}
-
-.continue-btn { 
-  background: linear-gradient(135deg, var(--success), #229954);
-  margin-top: 20px;
-}
-
-.continue-btn:hover { 
-  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
-}
-
-.button-group { 
-  margin-top: 20px; 
-  overflow: auto;
-}
-
-.steps-grid { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-  gap: 15px; 
-  margin: 20px 0;
-}
-
-.success-message { 
-  background: linear-gradient(135deg, #D5F4E6, #ABEBC6);
-  color: #186A3B; 
-  padding: 30px; 
-  border-radius: 15px; 
-  margin: 25px 0; 
-  border-left: 5px solid var(--success); 
-  text-align: center;
-  box-shadow: 0 8px 25px rgba(39, 174, 96, 0.2);
-}
-
-.success-message h3 { 
-  margin-top: 0; 
-  font-size: 1.6em;
-  color: var(--success);
-}
-
-.code-display { 
-  background: white; 
-  padding: 20px; 
-  border-radius: 12px; 
-  margin: 20px 0; 
-  border: 3px solid var(--success);
-  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.1);
-}
-
-.code-display .letters { 
-  display: flex; 
-  justify-content: center; 
-  gap: 12px; 
-  margin-top: 15px; 
-  flex-wrap: wrap;
-}
-
-.code-display .letter { 
-  width: 55px; 
-  height: 55px; 
-  background: linear-gradient(135deg, var(--accent), #16A085);
-  border-radius: 12px; 
-  text-align: center; 
-  line-height: 55px; 
-  font-size: 1.8em; 
-  font-weight: bold; 
-  color: white;
-  box-shadow: 0 4px 15px rgba(26, 188, 156, 0.3);
-}
-
-.qr-container { 
-  text-align: center; 
-  margin: 35px 0;
-  padding: 25px;
-  background: linear-gradient(135deg, #FFF9E6, #FFF3CD);
-  border-radius: 12px;
-  border-left: 5px solid var(--warning);
-}
-
-.qr-container h3 {
-  color: var(--warning);
-  margin-top: 0;
-}
-
-.qr-container img { 
-  max-width: 250px; 
-  border: 4px solid var(--primary); 
-  border-radius: 15px; 
-  padding: 15px; 
-  background: white;
-  box-shadow: 0 8px 25px rgba(44, 62, 80, 0.2);
-  margin: 20px 0;
-}
-
-.qr-instructions {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  margin-top: 20px;
-  border: 2px solid var(--warning);
-  line-height: 1.8;
-  color: var(--dark);
-}
-
-.qr-instructions strong {
-  color: var(--warning);
-}
-
-footer {
-  text-align: center;
-  margin-top: 40px;
-  padding: 20px 0;
-  border-top: 2px solid #ECF0F1;
-  color: #7F8C8D;
-  font-size: 0.9em;
-}
-
-footer a {
-  color: #3498DB;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-footer a:hover {
-  text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-  body { font-size: 15px; padding: 10px; }
-  .container { padding: 25px; border-radius: 15px; }
-  h1 { font-size: 1.8em; }
-  h2 { font-size: 1.4em; }
-  .letter-box { width: 42px; height: 42px; line-height: 42px; font-size: 1.3em; margin: 4px;}
-  .dragspace { padding: 15px; }
-  button { padding: 12px 20px; font-size: 1em; }
-  .steps-grid { grid-template-columns: 1fr;}
-  .code-display .letter { width: 48px; height: 48px; line-height: 48px; font-size: 1.5em;}
-}
-
-@media (max-width: 480px) {
-  body { font-size: 14px; }
-  h1 { font-size: 1.5em; }
-  .letter-box { width: 38px; height: 38px; line-height: 38px; font-size: 1.2em; margin: 3px;}
-  .code-display .letter { width: 42px; height: 42px; line-height: 42px; font-size: 1.3em;}
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mission IA Établissement 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4e7ed 50%, #c8dfe8 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(89, 130, 154, 0.15);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #5a7c8f 0%, #6b8fa3 100%);
+            color: white;
+            padding: 35px;
+            text-align: center;
+            border-bottom: 4px solid #88b4c7;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .header p {
+            opacity: 0.95;
+            font-size: 1.05em;
+            font-weight: 300;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .timer {
+            background: rgba(255,255,255,0.25);
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 18px;
+            font-size: 1.3em;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .timer-label {
+            opacity: 0.92;
+        }
+
+        .timer-value {
+            background: rgba(255,255,255,0.35);
+            padding: 10px 22px;
+            border-radius: 10px;
+            min-width: 85px;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .score-board {
+            background: linear-gradient(135deg, #7ea3b5 0%, #6b8fa3 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 18px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(106, 143, 163, 0.25);
+        }
+
+        .score-item {
+            flex: 1;
+        }
+
+        .score-item .label {
+            font-size: 0.92em;
+            opacity: 0.93;
+            margin-bottom: 8px;
+            font-weight: 400;
+        }
+
+        .score-item .value {
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        .question-card {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 16px rgba(89, 130, 154, 0.08);
+            border: 1px solid #e3f0f5;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-card h2 {
+            color: #3d5a6b;
+            margin-bottom: 24px;
+            font-size: 1.35em;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 13px;
+        }
+
+        .choice-btn {
+            background: #f8fbfc;
+            border: 2px solid #d0e3eb;
+            padding: 18px 26px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 1.02em;
+            font-weight: 500;
+            color: #3d5a6b;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choice-btn:hover {
+            transform: translateX(8px);
+            border-color: #7ea3b5;
+            background: #eef7fb;
+            box-shadow: 0 4px 12px rgba(106, 143, 163, 0.12);
+        }
+
+        .choice-btn.correct {
+            background: #d4edda;
+            border-color: #5fa573;
+            animation: correctPulse 0.6s ease;
+        }
+
+        .choice-btn.incorrect {
+            background: #f8d7da;
+            border-color: #c97a82;
+            animation: shake 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .feedback {
+            margin-top: 22px;
+            padding: 22px;
+            border-radius: 14px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #2d5a3d;
+            border: 2px solid #5fa573;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #6b3a3e;
+            border: 2px solid #c97a82;
+        }
+
+        .feedback h3 {
+            margin-bottom: 12px;
+            font-size: 1.2em;
+        }
+
+        .feedback p {
+            line-height: 1.6;
+            margin: 8px 0;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #7ea3b5 0%, #6b8fa3 100%);
+            color: white;
+            border: none;
+            padding: 14px 38px;
+            border-radius: 28px;
+            cursor: pointer;
+            font-size: 1.08em;
+            font-weight: 600;
+            margin-top: 22px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(106, 143, 163, 0.25);
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(106, 143, 163, 0.35);
+            background: linear-gradient(135deg, #88b4c7 0%, #7ea3b5 100%);
+        }
+
+        .incident-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(61, 90, 107, 0.88);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+            padding: 20px;
+        }
+
+        .incident-card {
+            background: white;
+            padding: 42px;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 80px rgba(61, 90, 107, 0.4);
+            animation: slideUp 0.5s ease;
+            border-top: 6px solid #d89a7f;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .incident-card h2 {
+            color: #c97a6d;
+            margin-bottom: 28px;
+            font-size: 1.75em;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .incident-card .incident-description {
+            background: #fef9f3;
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 26px;
+            border-left: 5px solid #d89a7f;
+            font-size: 1.08em;
+            line-height: 1.7;
+            color: #6b5042;
+        }
+
+        .incident-card .incident-question {
+            font-weight: 600;
+            color: #3d5a6b;
+            margin-bottom: 22px;
+            font-size: 1.18em;
+            padding: 16px;
+            background: #f0f7fa;
+            border-radius: 11px;
+        }
+
+        .exchange-section {
+            background: linear-gradient(135deg, #eef7fb 0%, #e3f0f5 100%);
+            padding: 32px;
+            border-radius: 16px;
+            margin: 32px 0;
+            box-shadow: 0 5px 20px rgba(89, 130, 154, 0.1);
+            border: 2px solid #c8dfe8;
+        }
+
+        .exchange-section h3 {
+            color: #3d5a6b;
+            margin-bottom: 18px;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+
+        .exchange-section p {
+            color: #4d6a7b;
+            font-size: 1.08em;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .exchange-section ul {
+            text-align: left;
+            margin: 20px 0;
+            padding-left: 28px;
+        }
+
+        .exchange-section li {
+            margin: 13px 0;
+            line-height: 1.8;
+            font-size: 1.05em;
+            color: #3d5a6b;
+        }
+
+        .final-score {
+            text-align: center;
+            padding: 42px;
+        }
+
+        .final-score h2 {
+            font-size: 2.4em;
+            color: #5a7c8f;
+            margin-bottom: 32px;
+            font-weight: 600;
+        }
+
+        .final-score .score-display {
+            background: linear-gradient(135deg, #7ea3b5 0%, #6b8fa3 100%);
+            color: white;
+            padding: 42px;
+            border-radius: 20px;
+            font-size: 2.8em;
+            font-weight: 700;
+            margin-bottom: 32px;
+            box-shadow: 0 10px 40px rgba(106, 143, 163, 0.25);
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px 24px;
+            color: #6b8fa3;
+            font-size: 0.98em;
+            border-top: 1px solid #d0e3eb;
+            margin-top: 24px;
+            background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(232,244,248,0.4) 100%);
+        }
+
+        footer a {
+            color: #5a7c8f;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        footer a:hover {
+            color: #7ea3b5;
+            text-decoration: underline;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 22px;
+            }
+
+            .score-board {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.6em;
+            }
+
+            .incident-card {
+                padding: 28px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<h1>✨ Simulateur Décisionnel : Classe Flexible</h1>
-  <h1>✨ Les experts flexibles</h1>
-<div class="progress" id="progress">Lettres débloquées :</div>
-<div id="letters"></div>
-<div id="game"></div>
-<div class="notes-area">
-  <h3 style="color:#2C3E50;">📝 Espace de prise de notes</h3>
-  <textarea id="notes" placeholder="Notez ici vos réflexions, idées et observations..."></textarea>
-  <button onclick="downloadNotes()">📥 Télécharger mes notes</button>
-</div>
-<div id="scoring"></div>
-<div id="exportArea"></div>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Mission IA Établissement 2025</h1>
+            <p>Quiz interactif avec incidents critiques</p>
+            <div class="timer">
+                <span class="timer-label">⏱️ Temps restant:</span>
+                <span class="timer-value" id="timerDisplay">20:00</span>
+            </div>
+        </div>
 
-<footer>
-  <p>Application créée par <strong>Amélie Silvert</strong></p>
-  <p><a href="mailto:amelie.silvert@ac-lille.fr">amelie.silvert@ac-lille.fr</a></p>
-</footer>
+        <div class="content">
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="label">📊 Score</div>
+                    <div class="value" id="scoreDisplay">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">✅ Bonnes réponses</div>
+                    <div class="value" id="correctDisplay">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">❌ Erreurs</div>
+                    <div class="value" id="incorrectDisplay">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="label">📝 Question</div>
+                    <div class="value"><span id="currentDisplay">0</span>/<span id="totalDisplay">20</span></div>
+                </div>
+            </div>
 
-</div>
+            <div id="quizContainer"></div>
+        </div>
 
-<script>
-let state = {step: 0, score:0, letters: [], parcours:[], exportID: ""};
-const steps = [
-  {
-    titre:"Sensibiliser l'équipe",
-    keyword: {
-      question: "Qu'est-ce qu'un aménagement de classe flexible peut tendre à réduire chez les élèves ?",
-      hint: "(2 mots attendus)",
-      answer: "le stress"
-    },
-    resources: {
-      title: "📚 Ressource à consulter",
-      intro: "Avant de répondre, consultez cette ressource sur l'importance de l'aménagement de classe :",
-      link: {url:"https://www.reseau-canope.fr/actualites/article/amenager-sa-classe-pour-servir-sa-pedagogie", text:"Aménager sa classe pour servir sa pédagogie (Réseau Canopé)"}
-    },
-    texte:"Un enseignant refuse de bouger les tables de sa classe et remet en cause l'intérêt de la flexibilité. Quel argument est le plus efficace pour engager le dialogue ?",
-    qcm: [
-      {text:"« La classe flexible est gravée dans le marbre, c'est un projet spécifique. »", correct:false},
-      {text:"« La flexibilité favorise la collaboration et l'engagement des élèves. »", correct:true},
-      {text:"« On doit suivre la tendance, c'est le XXIe siècle ! »", correct:false},
-    ],
-    visuel:"https://cdn.pixabay.com/photo/2017/01/10/19/05/classroom-1963759_960_720.jpg"
-  },
-  {
-    titre:"Organiser le projet",
-    keyword: {
-      question: "Dans le premier degré, quel outil pour planifier les tâches des élèves peut être utile dans le second degré aussi ?",
-      hint: "(4 mots attendus)",
-      answer: "le plan de travail"
-    },
-    resources: {
-      title: "📚 Ressource à consulter",
-      intro: "Consultez cette ressource pour comprendre les étapes d'un projet de classe flexible :",
-      link: {url:"https://bloghoptoys.fr/comment-reussir-votre-projet-de-classe-flexible/", text:"Comment réussir votre projet de classe flexible ? (Blog Hop'Toys)"}
-    },
-    texte:"Organisez les étapes de démarrage d'une classe flexible dans l'ordre chronologique. Glissez chaque élément dans la bonne position (une seule carte par étape).",
-    dragtask: {
-      items: [
-         {id:"1", text:"Réfléchir au projet et définir les objectifs pédagogiques", cat:"etape1"},
-         {id:"2", text:"Former l'équipe et mobiliser les enseignants", cat:"etape2"},
-         {id:"3", text:"Récupérer ou acheter du matériel au fur et à mesure", cat:"etape3"},
-         {id:"4", text:"Aménager la classe avec différentes zones", cat:"etape4"},
-         {id:"5", text:"Établir des règles claires avec les élèves", cat:"etape5"},
-         {id:"6", text:"Observer et ajuster progressivement", cat:"etape6"},
-         {id:"7", text:"Acheter du matériel sans concertation", cat:"piege"},
-         {id:"8", text:"Tout changer d'un coup sans test", cat:"piege"},
-      ],
-      cats: [
-        {name: "Étape 1", key:"etape1"},
-        {name: "Étape 2", key:"etape2"},
-        {name: "Étape 3", key:"etape3"},
-        {name: "Étape 4", key:"etape4"},
-        {name: "Étape 5", key:"etape5"},
-        {name: "Étape 6", key:"etape6"}
-      ]
-    },
-    visuel:"https://images.unsplash.com/photo-1523580846011-d3a5bc25702b"
-  },
-  {
-    titre:"Utilité pédagogique",
-    keyword: {
-      question: "Quel est le conseil d'Amélie, l'enseignante de lettres pour se lancer : doit-on tout changer dans sa pédagogie ?",
-      hint: "(réponse : oui ou non)",
-      answer: "non"
-    },
-    discussion: "💬 Après avoir visionné cette vidéo, discutez des points qui vous ont marqués. Par exemple, quels sont vos ressentis face à la présentation de la classe d'Amélie.",
-    resources: {
-      title: "📚 Ressource à consulter (vidéo)",
-      intro: "Découvrez les bénéfices pédagogiques de la classe flexible :",
-      link: {url:"https://canotech.fr/a/la-classe-flexible-pour-faire-classe-a-tous-les-eleves", text:"La classe flexible pour faire classe à tous les élèves (CanoTech)"}
-    },
-    texte:"Cochez les avantages pédagogiques documentés de la classe flexible :",
-    qcm: [
-      {text:"Plus grande motivation des élèves", correct:true},
-      {text:"Meilleur climat de classe", correct:true},
-      {text:"Automaticité des résultats élevés", correct:false},
-      {text:"Favorise l'autonomie", correct:true},
-      {text:"Les élèves ne font plus de bruit", correct:false}
-    ],
-    visuel:"https://cdn.pixabay.com/photo/2017/09/09/21/13/class-2732253_960_720.jpg"
-  },
-  {
-    titre:"Parent inquiet",
-    keyword: {
-      question: "Dans l'article d'Archiclasse, dans la partie témoignage d'Anne-Cécile Calléjon, quel sport est utilisé pour créer la métaphore du travail d'équipe ?",
-      hint: "(2 mots attendus)",
-      answer: "le curling"
-    },
-    resources: {
-      title: "📚 Ressource à consulter",
-      intro: "Découvrez comment impliquer et accompagner les parents :",
-      link: {url:"https://archiclasse.education.fr/Un-projet-accompagne-est-toujours-un-projet-reussi", text:"Un projet accompagné : impliquer parents et usagers (Archiclasse)"}
-    },
-    texte:`Un parent vient vous voir, persuadé que la classe flexible « n'est que du désordre ». Que lui montrez-vous en priorité ?`,
-    qcm:[
-      {text:"Des photos d'élèves concentrés en groupe et en autonomie.", correct:true},
-      {text:"Votre budget mobilier.", correct:false},
-      {text:"Des statistiques nationales.", correct:false}
-    ],
-    visuel:"https://cdn.pixabay.com/photo/2015/09/18/21/13/classroom-942422_960_720.jpg"
-  },
-  {
-    titre:"Limiter les nuisances",
-    keyword: {
-      question: "Quel mot-clef dans cet article pour laisser l'élève à BEP se sentir bien dans la classe ? Le professeur lui laisse ... de son espace de travail.",
-      hint: "(2 mots attendus)",
-      answer: "le choix"
-    },
-    resources: {
-      title: "📚 Ressource à consulter",
-      intro: "Découvrez comment adapter la classe flexible et gérer le bruit :",
-      link: {url:"https://www.classe-de-demain.fr/accueil/classe-flexible/comment-adapter-sa-classe-flexible-aux-eleves-aux-besoins-educatifs-particuliers-bep-episode-4", text:"Adapter sa classe flexible et gérer le bruit (Classe de Demain)"}
-    },
-    texte:`Un collègue d'à côté se plaint du bruit. Quelle action prioritaire ?`,
-    qcm:[
-      {text:"Poser des tapis, panneaux acoustiques, et réguler les déplacements.", correct:true},
-      {text:"Fermer définitivement la salle.", correct:false},
-      {text:"Accuser l'enseignant flexible.", correct:false}
-    ],
-    visuel:"https://images.unsplash.com/photo-1524995997946-a1c2e315a42f"
-  },
-  {
-    titre:"Évoluer dans sa posture",
-    keyword: {
-      question: "Comment Défine fonctionne pour la répartition des élèves sur différentes assises ? Par un planning ...",
-      hint: "(1 mot attendu)",
-      answer: "hebdomadaire"
-    },
-    resources: {
-      title: "📚 Ressource à consulter",
-      intro: "Explorez le changement de posture de l'enseignant :",
-      link: {url:"https://bloghoptoys.fr/comment-gerer-les-differentes-assises-de-la-classe/", text:"Gérer les assises et la posture en classe flexible (Blog Hop'Toys)"}
-    },
-    texte:"Cochez les attitudes professionnelles favorisant la posture de guide :",
-    qcm:[
-      {text:"Encourager l'autonomie et la prise d'initiative", correct:true},
-      {text:"Laisser les élèves seuls face à la tâche", correct:false},
-      {text:"Varier les modalités d'animation", correct:true},
-      {text:"En variant les propositions d'assises aux élèves", correct:true},
-      {text:"Sanctionner ceux qui bougent trop souvent", correct:false}
-    ],
-    visuel:"https://cdn.pixabay.com/photo/2018/01/20/08/33/laptop-3095990_960_720.jpg"
-  }
-];
-
-function normalizeText(text){
-  return text.toLowerCase().trim().replace(/[^\w\s]/g, '').replace(/\s+/g, ' ');
-}
-
-function updateLetters(){
-  const container = document.getElementById('letters');
-  if(!container) return;
-  container.innerHTML = '';
-  'SOUPLE'.split('').forEach((l,i)=> {
-    const box = document.createElement('span');
-    const isUnlocked = state.letters.includes(l);
-    box.className = 'letter-box'+(isUnlocked?' unlocked':' hidden');
-    box.textContent = isUnlocked ? l : '?';
-    container.appendChild(box);
-  });
-}
-
-function showCodeMessage(){
-  const content = document.getElementById('game');
-  content.innerHTML = '';
-  
-  const successDiv = document.createElement('div');
-  successDiv.className = 'success-message';
-  
-  const letter = "SOUPLE"[state.step];
-  successDiv.innerHTML = `
-    <h3>🎉 Bravo ! Vous avez débloqué la lettre "${letter}"</h3>
-    <div class="code-display">
-      <p><strong>Code actuel :</strong></p>
-      <div class="letters">
-        ${state.letters.map(l => `<span class="letter">${l}</span>`).join('')}
-      </div>
+        <footer>
+            <p>
+                Conçu par <strong><a href="mailto:amelie.silvert@region-academique-hdf.fr">Amélie Silvert</a></strong> à l'aide de l'IA
+            </p>
+        </footer>
     </div>
-  `;
-  
-  const continueBtn = document.createElement('button');
-  continueBtn.textContent = "Continuer →";
-  continueBtn.className = 'continue-btn';
-  continueBtn.onclick = ()=> {
-    state.step++;
-    showStep();
-  };
-  
-  successDiv.appendChild(continueBtn);
-  content.appendChild(successDiv);
-}
 
-function addBackButton(container){
-  if(state.step > 0){
-    const backBtn = document.createElement('button');
-    backBtn.textContent = "← Retour";
-    backBtn.className = 'back-btn';
-    backBtn.onclick = goBack;
-    container.insertBefore(backBtn, container.firstChild);
-  }
-}
+    <script>
+        const questions = [
+            {question: 'Quelle est la première règle d\'or du cadre d\'usage de l\'IA en établissement?', choices: ['Toujours utiliser l\'IA pour gagner du temps', 'Jamais de données personnelles dans les IA grand public', 'Former tous les élèves dès le CP', 'Utiliser uniquement ChatGPT'], correct: 1, points: 10, livret: 'Livret de mission - Protection des données'},
+            {question: 'À partir de quel niveau les élèves peuvent-ils manipuler des IA génératives de manière encadrée?', choices: ['CP', '6ème', '4ème', 'Terminale'], correct: 2, points: 10, livret: 'Livret de mission - Usage pédagogique selon les niveaux'},
+            {question: 'Que doit faire un enseignant qui utilise l\'IA pour préparer un support de cours?', choices: ['Le distribuer directement aux élèves', 'Signaler systématiquement l\'utilisation de l\'IA et vérifier le contenu', 'Ne rien dire pour garder le secret professionnel', 'Demander l\'autorisation au rectorat'], correct: 1, points: 10, livret: 'Livret de mission - Transparence et responsabilité'},
+            {question: 'Pourquoi les détecteurs de contenu IA sont-ils déconseillés pour sanctionner les élèves?', choices: ['Ils sont trop chers', 'Ils ont un taux d\'erreur élevé avec de nombreux faux positifs', 'Ils sont interdits par la loi', 'Ils fonctionnent trop lentement'], correct: 1, points: 10, livret: 'Livret de mission - Devoirs et évaluation'},
+            {question: 'Quelle est la consommation énergétique d\'une requête IA par rapport à une recherche web classique?', choices: ['Identique', '2 fois plus', '10 fois plus', '100 fois plus'], correct: 2, points: 10, livret: 'Livret de mission - Impact environnemental'},
+            {question: 'Un enseignant peut-il demander à ses élèves de 4ème de créer un compte ChatGPT personnel?', choices: ['Oui, sans restriction', 'Oui, avec accord parental', 'Non, c\'est interdit (CGU imposent 13 ans minimum avec accord parental vérifiable)', 'Oui, si c\'est pour un projet pédagogique'], correct: 2, points: 10, livret: 'Livret de mission - Protection des mineurs'},
+            {question: 'Que doit faire un CPE qui utilise ChatGPT pour rédiger une charte de vie scolaire?', choices: ['Le diffuser immédiatement', 'Vérifier, adapter, valider avec l\'équipe et mentionner l\'usage de l\'IA', 'Le garder secret', 'Demander à l\'IA de le vérifier'], correct: 1, points: 10, livret: 'Livret de mission - Transparence et responsabilité'},
+            {question: 'Dans quel cas l\'usage de l\'IA est-il justifié selon le principe de frugalité?', choices: ['Pour chercher une définition simple', 'Pour créer 20 exercices différenciés sur 3 niveaux', 'Pour toutes les tâches quotidiennes', 'Jamais'], correct: 1, points: 10, livret: 'Livret de mission - Principe de frugalité'},
+            {question: 'Que risque un établissement qui utilise ChatGPT pour prendre des décisions d\'orientation automatiques?', choices: ['Rien du tout', 'Une amende mineure', 'Violation du RGPD et responsabilité juridique', 'Des félicitations pour l\'innovation'], correct: 2, points: 10, livret: 'Livret de mission - Responsabilité juridique'},
+            {question: 'Comment un enseignant de SVT doit-il utiliser ChatGPT pour préparer un cours sur la photosynthèse?', choices: ['Projeter directement la réponse de l\'IA sans vérification', 'Générer, vérifier avec manuels et ressources scientifiques, corriger, puis mentionner l\'usage', 'Ne jamais utiliser l\'IA en SVT', 'Demander aux élèves de vérifier'], correct: 1, points: 10, livret: 'Livret de mission - Vérification des contenus'},
+            {question: 'Quel est l\'âge minimum requis par les CGU de ChatGPT?', choices: ['10 ans', '13 ans (avec consentement parental jusqu\'à 18 ans)', '16 ans', '18 ans'], correct: 1, points: 10, livret: 'Livret de mission - Protection des mineurs'},
+            {question: 'Un chef d\'établissement peut-il utiliser l\'IA pour traduire des documents pour familles allophones?', choices: ['Non, c\'est interdit', 'Oui, si le document ne contient pas de données sensibles et est vérifié', 'Oui, sans restriction', 'Seulement avec Google Translate'], correct: 1, points: 10, livret: 'Livret de mission - Usage professionnel'},
+            {question: 'Quelle est la bonne pratique si un élève est suspecté d\'avoir utilisé l\'IA pour un devoir?', choices: ['Le sanctionner immédiatement avec un 0/20', 'Utiliser un détecteur d\'IA comme preuve', 'Organiser un entretien pédagogique et une évaluation orale complémentaire', 'L\'exclure de l\'établissement'], correct: 2, points: 10, livret: 'Livret de mission - Devoirs et évaluation'},
+            {question: 'Dans quel contexte un enseignant peut-il copier-coller des copies d\'élèves dans ChatGPT?', choices: ['Pour gagner du temps dans les corrections', 'Si les parents sont d\'accord', 'Jamais - c\'est une violation grave du RGPD', 'Uniquement pendant les vacances'], correct: 2, points: 10, livret: 'Livret de mission - Protection des données'},
+            {question: 'Que doit faire un établissement qui découvre qu\'une charte rédigée par IA contient des erreurs juridiques?', choices: ['Minimiser l\'erreur', 'Retirer immédiatement, vérifier avec expert, corriger et re-présenter au CA', 'Accuser ChatGPT publiquement', 'Modifier discrètement'], correct: 1, points: 10, livret: 'Livret de mission - Responsabilité et vérification'},
+            {question: 'À quelle fréquence la formation à l\'IA doit-elle être renouvelée?', choices: ['Une fois suffit', 'Tous les 5 ans', 'En continu car évolution constante', 'Jamais'], correct: 2, points: 10, livret: 'Livret de mission - Formation continue'},
+            {question: 'Quelle plateforme est recommandée pour la formation obligatoire aux IA en 4ème?', choices: ['ChatGPT', 'Pix', 'Facebook', 'TikTok'], correct: 1, points: 10, livret: 'Livret de mission - Formation Pix IA'},
+            {question: 'Un enseignant spécialisé ULIS peut-il utiliser l\'IA pour adapter un texte en FALC?', choices: ['Non, c\'est interdit', 'Oui, s\'il vérifie et ajuste selon les besoins spécifiques de ses élèves', 'Oui, sans vérification', 'Uniquement avec autorisation médicale'], correct: 1, points: 10, livret: 'Livret de mission - Adaptation pédagogique'},
+            {question: 'Que doit faire un CPE qui découvre que des élèves utilisent ChatGPT comme confident psychologique?', choices: ['Les féliciter pour leur autonomie', 'Alerter sur les risques et orienter vers professionnels (infirmière, psy EN, AS)', 'Ne rien faire', 'Consulter leurs conversations'], correct: 1, points: 10, livret: 'Livret de mission - Risques psychologiques'},
+            {question: 'Quelle est la meilleure approche pour une dissertation à la maison à l\'ère de l\'IA?', choices: ['Interdire l\'IA sans adapter l\'exercice', 'Autoriser l\'IA pour la recherche, demander un journal de bord et évaluer principalement à l\'oral', 'Faire confiance aux élèves', 'Utiliser un détecteur d\'IA'], correct: 1, points: 10, livret: 'Livret de mission - Adaptation des évaluations'}
+        ];
 
-function goBack(){
-  if(state.step > 0){
-    state.step--;
-    if(state.letters.length > state.step){
-      state.letters.pop();
-      state.parcours.pop();
-    }
-    showStep();
-  }
-}
-
-function showStep(){
-  updateLetters();
-  const content = document.getElementById('game');
-  if(!content) return;
-  content.innerHTML = '';
-  
-  if(state.step >= steps.length){
-    showEnd();
-    return;
-  }
-  
-  const s = steps[state.step];
-  addBackButton(content);
-  showResourcesWithKeyword(s, content);
-}
-
-function showResourcesWithKeyword(s, container){
-  const titleDiv = document.createElement('div');
-  titleDiv.innerHTML = `<h2>${s.titre}</h2>`;
-  container.appendChild(titleDiv);
-  
-  const resDiv = document.createElement('div');
-  resDiv.className = 'resources';
-  let html = `<h3>${s.resources.title}</h3>`;
-  if(s.resources.intro){
-    html += `<p>${s.resources.intro}</p>`;
-  }
-  html += `<a href="${s.resources.link.url}" target="_blank">${s.resources.link.text}</a>`;
-  resDiv.innerHTML = html;
-  container.appendChild(resDiv);
-  
-  if(s.keyword){
-    const keywordDiv = document.createElement('div');
-    keywordDiv.className = 'keyword-input';
-    keywordDiv.innerHTML = `
-      <h4>❓ Question de compréhension</h4>
-      <p><strong>${s.keyword.question}</strong></p>
-      <p class="keyword-hint">${s.keyword.hint}</p>
-      <input type="text" id="keywordInput" placeholder="Votre réponse...">
-      <button id="validateKeyword">Valider la lecture</button>
-    `;
-    container.appendChild(keywordDiv);
-    
-    setTimeout(() => {
-      const validateBtn = document.getElementById('validateKeyword');
-      const inputField = document.getElementById('keywordInput');
-      
-      if(validateBtn && inputField){
-        validateBtn.onclick = ()=> {
-          const userInput = inputField.value;
-          if(normalizeText(userInput) === normalizeText(s.keyword.answer)){
-            if(s.discussion){
-              keywordDiv.style.display = 'none';
-              const discussionDiv = document.createElement('div');
-              discussionDiv.className = 'discussion-box';
-              discussionDiv.innerHTML = `<h4>💬 Temps d'échange</h4><p>${s.discussion}</p>`;
-              const continueBtn = document.createElement('button');
-              continueBtn.textContent = "Continuer vers l'activité →";
-              continueBtn.className = 'continue-btn';
-              continueBtn.onclick = ()=> showActivity(s, container);
-              discussionDiv.appendChild(continueBtn);
-              container.appendChild(discussionDiv);
-            } else {
-              showActivity(s, container);
+        const discussions = [
+            {
+                after: 6,
+                title: '💬 Temps d\'échange - L\'IA et les élèves',
+                content: '<p><strong>Prenez 2 minutes pour échanger avec le groupe:</strong></p><ul><li>Comment sensibilisez-vous vos élèves à un usage critique et responsable de l\'IA?</li><li>Quelles activités pédagogiques avez-vous mises en place pour former les élèves?</li><li>Comment gérez-vous les cas d\'élèves utilisant l\'IA pour leurs devoirs?</li><li>Quelles ressources éducatives partagez-vous avec vos élèves sur l\'IA?</li></ul>'
+            },
+            {
+                after: 12,
+                title: '💬 Temps d\'échange - Gouvernance IA dans l\'établissement',
+                content: '<p><strong>Prenez 2 minutes pour échanger avec le groupe:</strong></p><ul><li>Avez-vous élaboré une charte d\'usage de l\'IA dans votre établissement?</li><li>Comment organisez-vous la formation des équipes éducatives?</li><li>Qui est le référent IA dans votre structure? Quel est son rôle concret?</li><li>Comment impliquez-vous les parents et les élèves dans cette démarche?</li></ul>'
             }
-          } else {
-            alert("Réponse incorrecte. Veuillez relire la ressource et réessayer.");
-          }
-        };
-        
-        inputField.addEventListener('keypress', (e) => {
-          if(e.key === 'Enter'){
-            validateBtn.click();
-          }
-        });
-      }
-    }, 100);
-  }
-}
+        ];
 
-function showActivity(s, container){
-  container.innerHTML = '';
-  addBackButton(container);
-  
-  const activityDiv = document.createElement('div');
-  activityDiv.innerHTML = `<h2>${s.titre}</h2><div>${s.texte}</div>${s.visuel?`<img src="${s.visuel}" alt="">`:''}`;
-  container.appendChild(activityDiv);
-  
-  if(s.qcm){
-    const qform = document.createElement('form');
-    qform.className = 'qcm';
-    s.qcm.forEach((opt, idx)=>{
-      const lab=document.createElement('label');
-      const cb=document.createElement('input');
-      cb.type = 'checkbox';
-      cb.name = 'qcm'+state.step;
-      cb.value=idx;
-      lab.appendChild(cb);
-      lab.append(' '+opt.text);
-      qform.appendChild(lab);
-    });
-    const valBtn = document.createElement('button');
-    valBtn.textContent = "Valider";
-    valBtn.type = 'button';
-    valBtn.onclick = ()=>validateQCM(s.qcm, qform);
-    qform.appendChild(valBtn);
-    container.appendChild(qform);
-  }
-  
-  if(s.dragtask){
-    drawDragTask(s.dragtask, container);
-  }
-}
+        const incidents = [
+            {
+                title: '📚 BON USAGE - Enseignante de français créative',
+                description: 'Marie, enseignante de français en 3ème, souhaite créer une grille d\'évaluation pour une rédaction argumentative sur les réseaux sociaux. Elle hésite entre copier-coller la copie de Lucas (avec son nom) pour obtenir une correction personnalisée, ou demander une grille générique à ChatGPT.',
+                question: 'Quelle approche Marie doit-elle adopter?',
+                choices: [
+                    'Copier-coller la copie de Lucas avec son nom - c\'est plus efficace',
+                    'Demander à ChatGPT: "Crée une grille d\'évaluation pour un texte argumentatif niveau 3e sur les réseaux sociaux avec critères de cohérence, argumentation et expression écrite"',
+                    'Ne pas utiliser l\'IA du tout',
+                    'Demander aux élèves de créer eux-mêmes la grille avec ChatGPT'
+                ],
+                correct: 1,
+                points: 40,
+                justification: '✅ Livret de mission - Protection des données: Marie adopte la BONNE pratique. Elle utilise ChatGPT avec des données génériques (niveau, type de texte, compétences) sans aucune donnée personnelle d\'élève. C\'est l\'exemple concret recommandé dans le livret pour un usage conforme et efficace de l\'IA.'
+            },
+            {
+                title: '⚠️ MAUVAIS USAGE - CPE et document non vérifié',
+                description: 'Thomas, CPE, a rédigé un projet de charte de vie scolaire avec ChatGPT. Il trouve le texte parfait et s\'apprête à le distribuer directement aux élèves et familles sans validation ni mention de l\'outil utilisé.',
+                question: 'Que devrait faire Thomas?',
+                choices: [
+                    'Distribuer le texte immédiatement - il a l\'air bien rédigé',
+                    'Demander à ChatGPT de vérifier lui-même le document',
+                    'Ajouter en bas: "Document élaboré avec ChatGPT, revu et validé par l\'équipe de vie scolaire et présenté au CA" après vérification',
+                    'Garder secret l\'usage de l\'IA'
+                ],
+                correct: 2,
+                points: 45,
+                justification: '❌ Livret de mission - Transparence: Thomas fait une ERREUR. Il doit obligatoirement: 1) Mentionner l\'usage de l\'IA 2) Faire vérifier et adapter par l\'équipe 3) Valider en CA. Distribuer un document généré par IA sans validation ni transparence viole le principe de responsabilité.'
+            },
+            {
+                title: '🔴 INCIDENT CRITIQUE - Enseignant SVT et comptes mineurs',
+                description: 'Vous êtes chef d\'établissement. Un enseignant de SVT a imposé à ses 28 élèves de 4ème (13-14 ans) de créer un compte ChatGPT individuel pour faire des "recherches personnalisées" sur l\'environnement. Les élèves ont fourni emails et données personnelles. Cinq parents furieux vous contactent.',
+                question: 'Quelle action d\'urgence menez-vous?',
+                choices: [
+                    'Laisser faire - c\'est une décision pédagogique de l\'enseignant',
+                    'Rassurer les parents: "C\'est pour le bien de leurs enfants"',
+                    'Faire stopper immédiatement, informer que les CGU imposent 13 ans avec accord parental vérifiable, proposer alternative conforme (projection collective ou outil académique)',
+                    'Attendre de voir si ça pose vraiment problème'
+                ],
+                correct: 2,
+                points: 50,
+                justification: '🔴 Livret de mission - Protection mineurs: C\'est STRICTEMENT INTERDIT sans accord parental explicite et vérifiable. Les CGU de ChatGPT imposent 13 ans minimum avec consentement parental jusqu\'à 18 ans. Violation du RGPD et protection des mineurs. Action immédiate obligatoire: arrêt, information direction, alternative conforme.'
+            },
+            {
+                title: '✅ BON USAGE - Professeure d\'histoire et évaluation adaptée',
+                description: 'Léa, enseignante d\'histoire-géo en Terminale, donne une dissertation sur Camus. Elle sait que les élèves peuvent utiliser l\'IA. Elle hésite entre simplement interdire l\'IA, ou autoriser l\'IA pour le plan à condition que les élèves reformulent, ajoutent leurs analyses personnelles et citent leurs sources.',
+                question: 'Quelle approche Léa doit-elle privilégier?',
+                choices: [
+                    'Interdire totalement l\'IA sans adaptation',
+                    'Laisser faire sans cadre - ils sont autonomes',
+                    'Autoriser l\'IA pour générer un plan, exiger reformulation complète, analyses personnelles et citations de sources vérifiées',
+                    'Utiliser un détecteur d\'IA pour surveiller'
+                ],
+                correct: 2,
+                points: 40,
+                justification: '✅ Livret de mission - Usage lycée et évaluation: Léa adopte la BONNE pratique pour le lycée. Elle définit un cadre explicite, autorise l\'IA pour une phase précise (plan), exige appropriation et travail personnel. C\'est l\'exemple concret recommandé dans le livret pour adapter les évaluations.'
+            },
+            {
+                title: '🌍 BON USAGE - Chef d\'établissement et frugalité',
+                description: 'Ahmed, chef d\'établissement, doit faire une synthèse d\'une réunion de direction de 2h30. Il hésite entre: 1) Utiliser un outil de transcription automatique puis demander à l\'IA de structurer les idées qu\'il vérifiera et complétera (sans données élèves identifiables), ou 2) Tout taper manuellement.',
+                question: 'Quelle approche est conforme au principe de frugalité et d\'usage justifié?',
+                choices: [
+                    'Tout taper manuellement - ne jamais utiliser l\'IA',
+                    'Utiliser la transcription automatique + IA pour structurer, puis vérifier et adapter (sans données sensibles)',
+                    'Demander à l\'IA de tout faire automatiquement',
+                    'Utiliser ChatGPT même avec des échanges sur situations individuelles d\'élèves'
+                ],
+                correct: 1,
+                points: 45,
+                justification: '✅ Livret de mission - Frugalité et usage professionnel: Ahmed fait un BON usage. Il y a une vraie plus-value (gain de temps important sur tâche administrative répétitive), il supervise humainement, vérifie et n\'inclut pas de données sensibles. C\'est l\'exemple concret recommandé pour les chefs d\'établissement.'
+            }
+        ];
 
-function validateQCM(qcm, form){
-  let allCorrect=true;
-  const inputs = Array.from(form.querySelectorAll('input'));
-  
-  inputs.forEach((inp,i)=>{
-    let isChecked = inp.checked;
-    let shouldBeChecked = qcm[i].correct;
-    if(isChecked !== shouldBeChecked) allCorrect = false;
-  });
-  
-  if(allCorrect) {
-    let pointsForStep = 3;
-    if(state.step === 2) pointsForStep = 4;
-    
-    state.score += pointsForStep;
-    form.querySelector('button').disabled = true;
-    validateStep();
-  } else {
-    alert("Essayez encore pour trouver la meilleure réponse !");
-  }
-}
+        let currentQuestion = 0;
+        let score = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let answered = false;
+        let timeRemaining = 1200;
+        let timerInterval;
+        let incidentShown = [false, false, false, false, false];
+        let discussionShown = [false, false];
 
-function drawDragTask(task, container){
-  let srcItems=task.items.map(it=>({...it, placed:false}));
-  let cats=task.cats.map(c=>({...c, currentItem: null}));
-  
-  let dragspace = document.createElement('div');
-  dragspace.className = 'dragspace';
-  dragspace.id = 'dragSrc';
-  dragspace.innerHTML = '<strong>À placer :</strong><br>';
-  
-  srcItems.sort(() => Math.random() - 0.5);
-  
-  srcItems.forEach(it=>{
-    let span= document.createElement('span');
-    span.className='draggable';
-    span.textContent=it.text;
-    span.draggable=true;
-    span.dataset.id=it.id;
-    span.ondragstart= e=> e.dataTransfer.setData('id', it.id);
-    dragspace.appendChild(span);
-  });
-  container.appendChild(dragspace);
+        const quizContainer = document.getElementById('quizContainer');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const correctDisplay = document.getElementById('correctDisplay');
+        const incorrectDisplay = document.getElementById('incorrectDisplay');
+        const currentDisplay = document.getElementById('currentDisplay');
+        const totalDisplay = document.getElementById('totalDisplay');
+        const timerDisplay = document.getElementById('timerDisplay');
 
-  let stepsGrid = document.createElement('div');
-  stepsGrid.className = 'steps-grid';
-  
-  cats.forEach(cat=>{
-    let dz=document.createElement('div');
-    dz.className='dragspace single';
-    dz.innerHTML = `<strong>${cat.name}</strong><br>`;
-    dz.dataset.cat = cat.key;
-    
-    dz.ondragover = e=>e.preventDefault();
-    dz.ondrop= e=>{
-      e.preventDefault();
-      let id = e.dataTransfer.getData('id');
-      let item = srcItems.find(o=>o.id==id);
-      let elem = document.querySelector('[data-id="'+id+'"]');
-      
-      if(item && elem){
-        if(cat.currentItem){
-          let oldElem = dz.querySelector('.draggable');
-          if(oldElem){
-            dragspace.appendChild(oldElem);
-            cat.currentItem.placed = false;
-          }
+        totalDisplay.textContent = questions.length;
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    endQuiz();
+                }
+            }, 1000);
         }
-        
-        cats.forEach(c=>{
-          if(c.currentItem && c.currentItem.id === item.id) c.currentItem = null;
-        });
-        
-        dz.appendChild(elem);
-        cat.currentItem = item;
-        item.placed = true;
-      }
-    };
-    stepsGrid.appendChild(dz);
-  });
-  container.appendChild(stepsGrid);
-  
-  const btnGroup = document.createElement('div');
-  btnGroup.className = 'button-group';
-  
-  const resetBtn = document.createElement('button');
-  resetBtn.textContent = "🔄 Réinitialiser";
-  resetBtn.className = 'reset-btn';
-  resetBtn.onclick = ()=>{
-    cats.forEach(c=>{
-      if(c.currentItem){
-        let elem = document.querySelector('[data-id="'+c.currentItem.id+'"]');
-        if(elem) dragspace.appendChild(elem);
-        c.currentItem.placed = false;
-        c.currentItem = null;
-      }
-    });
-  };
-  btnGroup.appendChild(resetBtn);
-  
-  const valBtn = document.createElement('button');
-  valBtn.textContent = "Valider mon organisation";
-  valBtn.onclick = ()=>{
-    let filledCount = cats.filter(c=>c.currentItem !== null).length;
-    if(filledCount !== 6){
-      alert("Veuillez placer exactement 6 éléments (un par étape) avant de valider !");
-      return;
-    }
-    
-    let hasPiege = cats.some(c=>c.currentItem && c.currentItem.cat==='piege');
-    let allCorrect = cats.every(c=>c.currentItem && c.currentItem.cat===c.key);
-    
-    if(allCorrect && !hasPiege) {
-      state.score += 4;
-      valBtn.disabled = true;
-      resetBtn.disabled = true;
-      validateStep();
-    } else {
-      if(hasPiege){
-        alert("Attention : certaines actions ne sont pas recommandées pour démarrer une classe flexible. Acheter du matériel sans concertation ou tout changer d'un coup sont des erreurs à éviter. Réessayez !");
-      } else {
-        alert("Certaines étapes ne sont pas dans le bon ordre chronologique. Réessayez !");
-      }
-    }
-  };
-  btnGroup.appendChild(valBtn);
-  container.appendChild(btnGroup);
-}
 
-function validateStep(){
-  const letter="SOUPLE"[state.step];
-  state.letters.push(letter);
-  state.parcours.push(steps[state.step].titre);
-  updateLetters();
-  showCodeMessage();
-}
+        function showIncident(incidentIndex) {
+            const incident = incidents[incidentIndex];
+            incidentShown[incidentIndex] = true;
 
-function showEnd(){
-  updateLetters();
-  let res = document.getElementById('game');
-  if(!res) return;
-  let perf = state.score >= 16 ? "Transformation exemplaire !" : (state.score>=12? "Réussite solide" : "Progrès à faire !");
-  res.innerHTML = `<h2>🎉 Félicitations, vous avez débloqué toutes les lettres !</h2>
-    <div class="code-display">
-      <p><strong>Code final : SOUPLE</strong></p>
-      <div class="letters">
-        ${'SOUPLE'.split('').map(l => `<span class="letter">${l}</span>`).join('')}
-      </div>
-    </div>
-    <div id="scoring">Votre score : ${state.score}/20 <br><b>${perf}</b></div>
-    <div class="qr-container">
-      <h3>🎁 Découvrez votre récompense !</h3>
-      <img src="https://silverteacher.github.io/simulateurflexible/qrcode.png" alt="QR Code Récompense">
-      <div class="qr-instructions">
-        <p><strong>📋 Instructions pour accéder à la ressource BONUS :</strong></p>
-        <p>Vous pouvez maintenant ouvrir votre enveloppe et récupérer le QR code physique. Les lettres du code découvertes (S-O-U-P-L-E) seront à cocher sur le document pour rendre le QR code actif et accéder à la ressource BONUS exclusive !</p>
-      </div>
-    </div>
-    <button id="export">📥 Exporter votre parcours</button>`;
-  
-  document.getElementById('export').onclick = function(){
-    let id = "CF"+Date.now();
-    state.exportID = id;
-    let notes = document.getElementById('notes').value;
-    let txt = `ID: ${id}\nScore: ${state.score}/20\nRésultat: ${perf}\nParcours: ${state.parcours.join(', ')}\n\n=== NOTES ===\n${notes}`;
-    let blob = new Blob([txt], {type:"text/plain"});
-    let a = document.createElement('a');
-    a.download= 'ClasseFlexible_parcours_'+id+'.txt';
-    a.href= URL.createObjectURL(blob);
-    a.click();
-  };
-}
+            const overlay = document.createElement('div');
+            overlay.className = 'incident-overlay';
+            overlay.innerHTML = `
+                <div class="incident-card">
+                    <h2>${incident.title}</h2>
+                    <div class="incident-description">
+                        ${incident.description}
+                    </div>
+                    <div class="incident-question">
+                        ❓ ${incident.question}
+                    </div>
+                    <div class="choices">
+                        ${incident.choices.map((choice, index) => `
+                            <button class="choice-btn incident-choice" data-index="${index}">
+                                ${choice}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="incidentFeedback"></div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
 
-function downloadNotes(){
-  let notes = document.getElementById('notes').value;
-  if(!notes.trim()){
-    alert("Aucune note à télécharger !");
-    return;
-  }
-  let blob = new Blob([notes], {type:"text/plain"});
-  let a = document.createElement('a');
-  a.download= 'MesNotes_ClasseFlexible.txt';
-  a.href= URL.createObjectURL(blob);
-  a.click();
-}
+            const choiceButtons = overlay.querySelectorAll('.incident-choice');
+            choiceButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const chosenIndex = parseInt(this.getAttribute('data-index'));
+                    handleIncidentChoice(chosenIndex, incident.correct, incident.points, incident.justification, this);
+                });
+            });
+        }
 
-window.addEventListener('DOMContentLoaded', function(){
-  updateLetters();
-  showStep();
-});
-</script>
+        function handleIncidentChoice(chosen, correct, points, justification, button) {
+            const buttons = button.parentElement.querySelectorAll('.choice-btn');
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === correct) {
+                    btn.classList.add('correct');
+                } else if (btn === button && chosen !== correct) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            const feedbackDiv = document.getElementById('incidentFeedback');
+            if (chosen === correct) {
+                score += points;
+                correctCount++;
+                feedbackDiv.innerHTML = `
+                    <div class="feedback correct">
+                        <h3>✅ Excellente décision!</h3>
+                        <p><strong>+${points} points</strong></p>
+                        <p>${justification}</p>
+                        <button class="next-btn" id="continueBtn">Continuer le quiz</button>
+                    </div>
+                `;
+            } else {
+                incorrectCount++;
+                feedbackDiv.innerHTML = `
+                    <div class="feedback incorrect">
+                        <h3>❌ Attention - Décision non conforme</h3>
+                        <p><strong>0 point</strong></p>
+                        <p>${justification}</p>
+                        <button class="next-btn" id="continueBtn">Continuer le quiz</button>
+                    </div>
+                `;
+            }
+
+            document.getElementById('continueBtn').addEventListener('click', function() {
+                const overlay = document.querySelector('.incident-overlay');
+                if (overlay) {
+                    overlay.remove();
+                }
+                showQuestion();
+            });
+            updateScoreBoard();
+        }
+
+        function showDiscussion(discussionIndex) {
+            const disc = discussions[discussionIndex];
+            discussionShown[discussionIndex] = true;
+
+            const exchangeDiv = document.createElement('div');
+            exchangeDiv.className = 'exchange-section';
+            exchangeDiv.innerHTML = `
+                <h3>${disc.title}</h3>
+                ${disc.content}
+                <button class="next-btn" id="exchangeBtn">Continuer</button>
+            `;
+            quizContainer.innerHTML = '';
+            quizContainer.appendChild(exchangeDiv);
+
+            document.getElementById('exchangeBtn').addEventListener('click', function() {
+                showQuestion();
+            });
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                endQuiz();
+                return;
+            }
+
+            // Vérifier d'abord les discussions (après Q6 et Q12)
+            if (currentQuestion === 6 && !discussionShown[0]) {
+                showDiscussion(0);
+                return;
+            }
+            if (currentQuestion === 12 && !discussionShown[1]) {
+                showDiscussion(1);
+                return;
+            }
+
+            // Puis vérifier les incidents (après Q3, Q6, Q9, Q12, Q15)
+            if (currentQuestion === 3 && !incidentShown[0]) {
+                showIncident(0);
+                return;
+            }
+            if (currentQuestion === 6 && !incidentShown[1] && discussionShown[0]) {
+                showIncident(1);
+                return;
+            }
+            if (currentQuestion === 9 && !incidentShown[2]) {
+                showIncident(2);
+                return;
+            }
+            if (currentQuestion === 12 && !incidentShown[3] && discussionShown[1]) {
+                showIncident(3);
+                return;
+            }
+            if (currentQuestion === 15 && !incidentShown[4]) {
+                showIncident(4);
+                return;
+            }
+
+            answered = false;
+            const q = questions[currentQuestion];
+            currentDisplay.textContent = currentQuestion + 1;
+
+            const questionCard = document.createElement('div');
+            questionCard.className = 'question-card';
+            questionCard.innerHTML = `
+                <h2>Question ${currentQuestion + 1}: ${q.question}</h2>
+                <div class="choices">
+                    ${q.choices.map((choice, index) => `
+                        <button class="choice-btn" onclick="checkAnswer(${index})" id="choice${index}">
+                            ${choice}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="feedback"></div>
+            `;
+
+            quizContainer.innerHTML = '';
+            quizContainer.appendChild(questionCard);
+        }
+
+        function checkAnswer(chosen) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.choice-btn');
+
+            buttons.forEach((btn, index) => {
+                btn.disabled = true;
+                if (index === q.correct) {
+                    btn.classList.add('correct');
+                } else if (index === chosen) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            const feedbackDiv = document.getElementById('feedback');
+            if (chosen === q.correct) {
+                score += q.points;
+                correctCount++;
+                feedbackDiv.innerHTML = `
+                    <div class="feedback correct">
+                        <h3>✅ Bravo! Bonne réponse</h3>
+                        <p><strong>+${q.points} points</strong></p>
+                        <p><em>${q.livret}</em></p>
+                        <button class="next-btn" onclick="nextQuestion()">Question suivante</button>
+                    </div>
+                `;
+            } else {
+                incorrectCount++;
+                feedbackDiv.innerHTML = `
+                    <div class="feedback incorrect">
+                        <h3>❌ Incorrect</h3>
+                        <p>La bonne réponse était: <strong>${q.choices[q.correct]}</strong></p>
+                        <p><em>${q.livret}</em></p>
+                        <button class="next-btn" onclick="nextQuestion()">Question suivante</button>
+                    </div>
+                `;
+            }
+
+            updateScoreBoard();
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            showQuestion();
+        }
+
+        function updateScoreBoard() {
+            scoreDisplay.textContent = score;
+            correctDisplay.textContent = correctCount;
+            incorrectDisplay.textContent = incorrectCount;
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            const totalPossible = questions.reduce((sum, q) => sum + q.points, 0) + incidents.reduce((sum, i) => sum + i.points, 0);
+            const percentage = Math.round((score / totalPossible) * 100);
+
+            let message = '';
+            let emoji = '';
+            if (percentage >= 90) {
+                message = 'Expert certifié! Vous maîtrisez parfaitement le cadre d\'usage de l\'IA en établissement.';
+                emoji = '🏆';
+            } else if (percentage >= 75) {
+                message = 'Très bon niveau! Vous avez une excellente compréhension des bonnes pratiques.';
+                emoji = '⭐';
+            } else if (percentage >= 60) {
+                message = 'Bon niveau! Continuez à vous former sur les usages responsables de l\'IA.';
+                emoji = '👍';
+            } else {
+                message = 'Niveau à améliorer. Nous vous recommandons de suivre une formation complémentaire.';
+                emoji = '📚';
+            }
+
+            quizContainer.innerHTML = `
+                <div class="final-score">
+                    <h2>${emoji} Quiz terminé!</h2>
+                    <div class="score-display">
+                        ${score} / ${totalPossible} points
+                        <div style="font-size: 0.5em; margin-top: 10px;">${percentage}%</div>
+                    </div>
+                    <div class="feedback correct" style="margin: 20px 0;">
+                        <h3>${message}</h3>
+                        <p><strong>Bonnes réponses:</strong> ${correctCount}</p>
+                        <p><strong>Erreurs:</strong> ${incorrectCount}</p>
+                    </div>
+                    <button class="next-btn" onclick="location.reload()">Recommencer le quiz</button>
+                </div>
+            `;
+        }
+
+        startTimer();
+        showQuestion();
+    </script>
 </body>
 </html>
