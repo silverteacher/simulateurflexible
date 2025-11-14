@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,24 +6,26 @@
 <title>Simulateur Classe Flexible - Mission Coopérative</title>
 <style>
 :root {
-  --primary: #2C3E50;
-  --ocean: #0077B6;
-  --teal: #00B4D8;
-  --coral: #FF6B6B;
-  --mint: #4ECDC4;
-  --success: #27AE60;
-  --warning: #F39C12;
-  --danger: #E74C3C;
-  --light: #ECF0F1;
-  --dark: #34495E;
+  --primary: #1a4d6d;
+  --secondary: #2e7d9a;
+  --accent: #4ba3c3;
+  --light-accent: #7cc5d9;
+  --success: #5ba58a;
+  --warning: #d4a850;
+  --danger: #c47466;
+  --light: #e8f4f8;
+  --lighter: #f5f9fb;
+  --dark: #1a4d6d;
+  --text: #2d3748;
+  --border: #c2d9e3;
 }
 
 * { box-sizing: border-box; }
 
 body { 
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-  background: linear-gradient(135deg, #0077B6 0%, #00B4D8 50%, #4ECDC4 100%);
-  color: var(--primary); 
+  background: linear-gradient(135deg, #2e7d9a 0%, #4ba3c3 50%, #7cc5d9 100%);
+  color: var(--text); 
   margin:0; 
   padding:20px; 
   font-size: 16px;
@@ -49,25 +50,25 @@ body {
 .intro-screen h1 {
   font-size: 2.5em;
   margin-bottom: 20px;
-  background: linear-gradient(135deg, var(--ocean), var(--mint));
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .intro-screen .welcome-text {
-  background: linear-gradient(135deg, #E8F8F5, #D5F4E6);
+  background: var(--lighter);
   padding: 30px;
   border-radius: 15px;
   margin: 30px 0;
-  border-left: 5px solid var(--mint);
+  border-left: 5px solid var(--accent);
   text-align: left;
   line-height: 1.9;
   font-size: 1.1em;
 }
 
 .intro-screen .start-btn {
-  background: linear-gradient(135deg, var(--success), #27AE60);
+  background: linear-gradient(135deg, var(--success), #4a9178);
   color: white;
   border: none;
   padding: 20px 50px;
@@ -76,13 +77,13 @@ body {
   border-radius: 15px;
   cursor: pointer;
   margin-top: 30px;
-  box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+  box-shadow: 0 8px 25px rgba(91, 165, 138, 0.4);
   transition: all 0.3s ease;
 }
 
 .intro-screen .start-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 12px 35px rgba(39, 174, 96, 0.5);
+  box-shadow: 0 12px 35px rgba(91, 165, 138, 0.5);
 }
 
 .mode-selector {
@@ -95,7 +96,7 @@ body {
 
 .mode-card {
   background: white;
-  border: 3px solid var(--ocean);
+  border: 3px solid var(--secondary);
   border-radius: 15px;
   padding: 30px;
   width: 320px;
@@ -106,14 +107,14 @@ body {
 
 .mode-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 119, 182, 0.3);
-  border-color: var(--mint);
+  box-shadow: 0 10px 30px rgba(46, 125, 154, 0.3);
+  border-color: var(--accent);
 }
 
 .mode-card.selected {
-  background: linear-gradient(135deg, var(--ocean), var(--teal));
+  background: linear-gradient(135deg, var(--secondary), var(--accent));
   color: white;
-  border-color: var(--mint);
+  border-color: var(--light-accent);
 }
 
 .mode-card h3 {
@@ -133,14 +134,14 @@ body {
 }
 
 .walkie-alert {
-  background: linear-gradient(135deg, var(--coral), var(--warning));
+  background: linear-gradient(135deg, var(--warning), #c9a04d);
   color: white;
   padding: 20px;
   border-radius: 12px;
   margin: 20px 0;
   animation: pulseAlert 2s infinite;
-  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-  border: 3px solid var(--danger);
+  box-shadow: 0 8px 25px rgba(212, 168, 80, 0.4);
+  border: 3px solid var(--warning);
 }
 
 @keyframes pulseAlert {
@@ -168,16 +169,16 @@ body {
 }
 
 .pilot-exclusive {
-  background: linear-gradient(135deg, #FFF9E6, #FFE5B4);
+  background: var(--lighter);
   padding: 25px;
   border-radius: 15px;
   margin: 20px 0;
-  border: 3px solid var(--warning);
-  box-shadow: 0 8px 25px rgba(243, 156, 18, 0.2);
+  border: 3px solid var(--accent);
+  box-shadow: 0 8px 25px rgba(75, 163, 195, 0.2);
 }
 
 .pilot-exclusive h4 {
-  color: var(--warning);
+  color: var(--primary);
   margin-top: 0;
   font-size: 1.3em;
   display: flex;
@@ -190,29 +191,29 @@ body {
   padding: 20px;
   border-radius: 10px;
   margin: 15px 0;
-  border-left: 5px solid var(--coral);
+  border-left: 5px solid var(--accent);
 }
 
-.pilot-exclusive .code-reveal {
-  background: var(--dark);
-  color: white;
+.pilot-exclusive .hint-emphasis {
+  background: var(--light);
   padding: 15px;
   border-radius: 10px;
   font-family: 'Courier New', monospace;
-  font-size: 1.2em;
-  text-align: center;
+  font-size: 1.1em;
   margin: 15px 0;
-  letter-spacing: 3px;
+  border: 2px dashed var(--secondary);
+  color: var(--primary);
+  font-weight: 600;
 }
 
 .timer-container {
-  background: linear-gradient(135deg, var(--ocean), var(--teal));
+  background: linear-gradient(135deg, var(--secondary), var(--accent));
   color: white;
   padding: 20px;
   border-radius: 15px;
   margin: 20px 0;
   text-align: center;
-  box-shadow: 0 8px 25px rgba(0, 119, 182, 0.4);
+  box-shadow: 0 8px 25px rgba(46, 125, 154, 0.4);
 }
 
 .timer-display {
@@ -238,7 +239,7 @@ body {
 }
 
 .timer-warning {
-  background: linear-gradient(135deg, var(--warning), #D68910);
+  background: linear-gradient(135deg, var(--warning), #c9a04d);
   animation: pulse 1s infinite;
 }
 
@@ -282,7 +283,7 @@ body {
 }
 
 .xp-bar-container {
-  background: var(--light);
+  background: var(--lighter);
   border-radius: 15px;
   padding: 20px;
   margin: 20px 0;
@@ -291,7 +292,7 @@ body {
 .xp-bar {
   width: 100%;
   height: 30px;
-  background: #BDC3C7;
+  background: var(--light);
   border-radius: 15px;
   overflow: hidden;
   position: relative;
@@ -299,7 +300,7 @@ body {
 
 .xp-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--mint), var(--ocean));
+  background: linear-gradient(90deg, var(--accent), var(--secondary));
   transition: width 0.5s ease;
   display: flex;
   align-items: center;
@@ -323,14 +324,14 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 2em;
-  background: linear-gradient(135deg, #BDC3C7, #95A5A6);
-  border: 3px solid #7F8C8D;
+  background: var(--light);
+  border: 3px solid var(--border);
   transition: all 0.3s ease;
   position: relative;
 }
 
 .badge.unlocked {
-  background: linear-gradient(135deg, var(--coral), var(--warning));
+  background: linear-gradient(135deg, var(--accent), var(--secondary));
   border-color: var(--success);
   animation: badgeUnlock 0.5s ease;
 }
@@ -361,15 +362,15 @@ body {
 }
 
 .pilot-interface {
-  background: linear-gradient(135deg, #FFF9E6, #FFF3CD);
+  background: var(--lighter);
   padding: 30px;
   border-radius: 15px;
   margin: 20px 0;
-  border: 3px solid var(--warning);
+  border: 3px solid var(--accent);
 }
 
 .pilot-interface h3 {
-  color: var(--warning);
+  color: var(--primary);
   margin-top: 0;
 }
 
@@ -385,7 +386,7 @@ body {
   height: 60px;
   font-size: 2em;
   text-align: center;
-  border: 3px solid var(--ocean);
+  border: 3px solid var(--secondary);
   border-radius: 10px;
   font-weight: 700;
   text-transform: uppercase;
@@ -393,8 +394,8 @@ body {
 
 .code-input:focus {
   outline: none;
-  border-color: var(--mint);
-  box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(75, 163, 195, 0.2);
 }
 
 h1 { 
@@ -410,7 +411,7 @@ h2 {
   font-size: 1.8em;
   font-weight: 600;
   margin-top: 30px;
-  border-left: 4px solid var(--mint);
+  border-left: 4px solid var(--accent);
   padding-left: 15px;
 }
 
@@ -432,27 +433,27 @@ h3 {
   display: inline-block; 
   width:50px; 
   height:50px; 
-  background: linear-gradient(135deg, #E3F2FD, #B3E5FC);
+  background: var(--light);
   margin:6px; 
   text-align:center; 
   line-height:50px; 
   border-radius:12px; 
   font-weight:700; 
   font-size:1.5em; 
-  border:2px solid var(--teal);
+  border:2px solid var(--border);
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
 .letter-box.unlocked { 
-  background: linear-gradient(135deg, var(--mint), var(--teal));
+  background: linear-gradient(135deg, var(--accent), var(--secondary));
   color:#fff;
   transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(78, 205, 196, 0.4);
+  box-shadow: 0 6px 20px rgba(75, 163, 195, 0.4);
 }
 
 .letter-box.hidden { 
-  background: #BDC3C7;
+  background: var(--light);
   color:transparent;
   user-select: none;
 }
@@ -469,18 +470,18 @@ h3 {
   padding: 15px 20px; 
   border-radius: 10px; 
   transition: all 0.3s ease;
-  background: var(--light);
+  background: var(--lighter);
   border: 2px solid transparent;
 }
 
 .qcm label:hover { 
-  background: #E8F8F5;
-  border-color: var(--mint);
+  background: var(--light);
+  border-color: var(--accent);
   transform: translateX(5px);
 }
 
 button { 
-  background: linear-gradient(135deg, var(--ocean), var(--teal));
+  background: linear-gradient(135deg, var(--secondary), var(--accent));
   color:#fff; 
   border:none; 
   border-radius:10px; 
@@ -490,27 +491,27 @@ button {
   font-size: 1.05em;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
+  box-shadow: 0 4px 15px rgba(46, 125, 154, 0.3);
 }
 
 button:disabled { 
-  background: linear-gradient(135deg, #95A5A6, #7F8C8D);
+  background: var(--light);
+  color: var(--border);
   cursor: not-allowed;
   box-shadow: none;
 }
 
 button:hover:not(:disabled) { 
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 119, 182, 0.4);
+  box-shadow: 0 6px 20px rgba(46, 125, 154, 0.4);
 }
 
 .back-btn { 
-  background: linear-gradient(135deg, #95A5A6, #7F8C8D);
-  float: left;
+  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
 }
 
 .reset-btn { 
-  background: linear-gradient(135deg, var(--danger), #C0392B);
+  background: linear-gradient(135deg, var(--danger), #b56a5c);
 }
 
 img { 
@@ -523,7 +524,7 @@ img {
 }
 
 #export { 
-  background: linear-gradient(135deg, var(--warning), #D68910);
+  background: linear-gradient(135deg, var(--warning), #c9a04d);
 }
 
 #scoring { 
@@ -535,7 +536,7 @@ img {
 }
 
 .dragspace { 
-  background: linear-gradient(135deg, #F8F9FA, #E9ECEF);
+  background: var(--lighter);
   padding:20px; 
   border-radius:12px; 
   min-height:80px; 
@@ -543,13 +544,13 @@ img {
   gap:12px; 
   flex-wrap:wrap; 
   margin:15px 0; 
-  border:3px dashed var(--ocean);
+  border:3px dashed var(--secondary);
   transition: all 0.3s ease;
 }
 
 .dragspace:hover {
-  border-color: var(--mint);
-  background: #F0F8FF;
+  border-color: var(--accent);
+  background: var(--light);
 }
 
 .dragspace.single { 
@@ -559,7 +560,7 @@ img {
 }
 
 .draggable { 
-  background: linear-gradient(135deg, var(--ocean), var(--teal));
+  background: linear-gradient(135deg, var(--secondary), var(--accent));
   margin: 4px; 
   padding: 12px 18px; 
   font-size: 0.95em; 
@@ -567,33 +568,33 @@ img {
   color: white;
   border-radius: 8px;
   font-weight: 500;
-  box-shadow: 0 4px 10px rgba(0, 119, 182, 0.3);
+  box-shadow: 0 4px 10px rgba(46, 125, 154, 0.3);
   transition: all 0.2s ease;
 }
 
 .draggable:hover { 
-  background: linear-gradient(135deg, var(--teal), #0096C7);
+  background: linear-gradient(135deg, var(--accent), var(--light-accent));
   transform: scale(1.05);
 }
 
 .resources { 
-  background: linear-gradient(135deg, #E8F8F5, #D5F4E6);
+  background: var(--lighter);
   padding: 25px; 
   border-radius: 12px; 
   margin: 25px 0; 
-  border-left: 5px solid var(--mint);
-  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.1);
+  border-left: 5px solid var(--accent);
+  box-shadow: 0 4px 15px rgba(75, 163, 195, 0.1);
 }
 
 .resources h3 { 
-  color: var(--mint); 
+  color: var(--secondary); 
   margin-top:0; 
   font-size: 1.3em;
   font-weight: 700;
 }
 
 .resources a { 
-  color: var(--ocean); 
+  color: var(--secondary); 
   text-decoration: none; 
   font-weight: 600; 
   display: block; 
@@ -601,12 +602,12 @@ img {
   padding: 15px 20px; 
   background: white; 
   border-radius: 10px; 
-  border: 2px solid var(--mint);
+  border: 2px solid var(--accent);
   transition: all 0.3s ease;
 }
 
 .resources a:hover { 
-  background: var(--mint);
+  background: var(--accent);
   color: white;
   transform: translateX(5px);
 }
@@ -616,12 +617,12 @@ img {
   padding: 25px; 
   border-radius: 12px; 
   margin: 25px 0; 
-  border: 3px solid var(--ocean);
-  box-shadow: 0 4px 15px rgba(0, 119, 182, 0.1);
+  border: 3px solid var(--secondary);
+  box-shadow: 0 4px 15px rgba(46, 125, 154, 0.1);
 }
 
 .keyword-input h4 { 
-  color: var(--ocean); 
+  color: var(--secondary); 
   margin-top: 0;
   font-size: 1.2em;
   font-weight: 600;
@@ -630,7 +631,7 @@ img {
 .keyword-input input { 
   width: 100%; 
   padding: 14px 18px; 
-  border: 2px solid #BDC3C7; 
+  border: 2px solid var(--border); 
   border-radius: 10px; 
   font-size: 1em; 
   margin: 12px 0;
@@ -639,8 +640,8 @@ img {
 
 .keyword-input input:focus {
   outline: none;
-  border-color: var(--ocean);
-  box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(46, 125, 154, 0.1);
 }
 
 .keyword-hint { 
@@ -651,16 +652,16 @@ img {
 }
 
 .discussion-box { 
-  background: linear-gradient(135deg, #FFF9E6, #FFF3CD);
+  background: var(--lighter);
   padding: 25px; 
   border-radius: 12px; 
   margin: 25px 0; 
   border-left: 5px solid var(--warning);
-  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.1);
+  box-shadow: 0 4px 15px rgba(212, 168, 80, 0.1);
 }
 
 .discussion-box h4 { 
-  color: #D68910; 
+  color: var(--warning); 
   margin-top: 0;
   font-weight: 700;
   font-size: 1.2em;
@@ -668,13 +669,13 @@ img {
 
 .discussion-box p {
   line-height: 1.8;
-  color: var(--dark);
+  color: var(--text);
 }
 
 .notes-area { 
   margin: 30px 0; 
   padding: 25px;
-  background: linear-gradient(135deg, #F8F9FA, #ECF0F1);
+  background: var(--lighter);
   border-radius: 12px;
 }
 
@@ -686,7 +687,7 @@ img {
   width: 100%; 
   min-height: 150px; 
   padding: 15px; 
-  border: 2px solid #BDC3C7; 
+  border: 2px solid var(--border); 
   border-radius: 10px; 
   font-size: 1em; 
   font-family: inherit; 
@@ -696,12 +697,12 @@ img {
 
 .notes-area textarea:focus {
   outline: none;
-  border-color: var(--ocean);
-  box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(46, 125, 154, 0.1);
 }
 
 .continue-btn { 
-  background: linear-gradient(135deg, var(--success), #229954);
+  background: linear-gradient(135deg, var(--success), #4a9178);
   margin-top: 20px;
 }
 
@@ -718,14 +719,14 @@ img {
 }
 
 .success-message { 
-  background: linear-gradient(135deg, #D5F4E6, #ABEBC6);
-  color: #186A3B; 
+  background: linear-gradient(135deg, #e6f5f0, #d1ebe3);
+  color: #2d5a4a; 
   padding: 30px; 
   border-radius: 15px; 
   margin: 25px 0; 
   border-left: 5px solid var(--success); 
   text-align: center;
-  box-shadow: 0 8px 25px rgba(39, 174, 96, 0.2);
+  box-shadow: 0 8px 25px rgba(91, 165, 138, 0.2);
 }
 
 .success-message h3 { 
@@ -740,7 +741,7 @@ img {
   border-radius: 12px; 
   margin: 20px 0; 
   border: 3px solid var(--success);
-  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.1);
+  box-shadow: 0 4px 15px rgba(91, 165, 138, 0.1);
 }
 
 .code-display .letters { 
@@ -754,21 +755,21 @@ img {
 .code-display .letter { 
   width: 55px; 
   height: 55px; 
-  background: linear-gradient(135deg, var(--mint), var(--teal));
+  background: linear-gradient(135deg, var(--accent), var(--secondary));
   border-radius: 12px; 
   text-align: center; 
   line-height: 55px; 
   font-size: 1.8em; 
   font-weight: bold; 
   color: white;
-  box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+  box-shadow: 0 4px 15px rgba(75, 163, 195, 0.3);
 }
 
 .qr-container { 
   text-align: center; 
   margin: 35px 0;
   padding: 25px;
-  background: linear-gradient(135deg, #FFF9E6, #FFF3CD);
+  background: var(--lighter);
   border-radius: 12px;
   border-left: 5px solid var(--warning);
 }
@@ -784,7 +785,7 @@ img {
   border-radius: 15px; 
   padding: 15px; 
   background: white;
-  box-shadow: 0 8px 25px rgba(44, 62, 80, 0.2);
+  box-shadow: 0 8px 25px rgba(26, 77, 109, 0.2);
   margin: 20px 0;
 }
 
@@ -795,7 +796,7 @@ img {
   margin-top: 20px;
   border: 2px solid var(--warning);
   line-height: 1.8;
-  color: var(--dark);
+  color: var(--text);
 }
 
 .qr-instructions strong {
@@ -806,13 +807,13 @@ footer {
   text-align: center;
   margin-top: 40px;
   padding: 20px 0;
-  border-top: 2px solid #ECF0F1;
+  border-top: 2px solid var(--light);
   color: #7F8C8D;
   font-size: 0.9em;
 }
 
 footer a {
-  color: var(--ocean);
+  color: var(--secondary);
   text-decoration: none;
   font-weight: 500;
 }
@@ -923,7 +924,7 @@ footer a:hover {
     <div id="game"></div>
     
     <div class="notes-area">
-      <h3 style="color:#2C3E50;">📝 Espace de prise de notes</h3>
+      <h3 style="color:#1a4d6d;">📝 Espace de prise de notes</h3>
       <textarea id="notes" placeholder="Notez ici vos réflexions, idées et observations..."></textarea>
       <button onclick="downloadNotes()">💾 Télécharger mes notes</button>
     </div>
@@ -962,12 +963,12 @@ const badges = [
 ];
 
 const pilotHints = [
-  {step: 0, alert: "📻 Le Pilote doit consulter sa ressource papier pour trouver un mot-clé secret !", hint: "Sur votre fiche papier, cherchez la section 'Aménagement et bien-être'. Le mot-clé à transmettre est lié à la réduction d'un état émotionnel chez les élèves.", codeReveal: "Lettre à débloquer : S"},
-  {step: 1, alert: "📻 Le Pilote a accès à un schéma exclusif sur ses documents !", hint: "Dans votre document papier 'Organisation du projet', identifiez l'outil de planification mentionné. C'est un outil du 1er degré utile au 2nd degré aussi (4 mots).", codeReveal: "Lettre à débloquer : O"},
-  {step: 2, alert: "📻 Le Pilote doit vérifier une information cruciale !", hint: "Consultez vos ressources et notez le conseil concernant les changements pédagogiques. Faut-il TOUT changer ? (réponse : oui ou non)", codeReveal: "Lettre à débloquer : U"},
-  {step: 3, alert: "📻 Le Pilote a une photo exclusive dans ses documents !", hint: "Consultez l'article Archiclasse dans vos ressources papier. Trouvez la métaphore sportive utilisée pour le travail d'équipe (section témoignage - 2 mots).", codeReveal: "Lettre à débloquer : P"},
-  {step: 4, alert: "📻 Le Pilote doit analyser un cas pratique sur sa fiche !", hint: "Dans votre document 'Gestion des nuisances', identifiez ce que le professeur laisse à l'élève BEP concernant son espace de travail (2 mots).", codeReveal: "Lettre à débloquer : L"},
-  {step: 5, alert: "📻 Dernière mission pour le Pilote !", hint: "Consultez le document sur la posture de l'enseignant. Comment Défine fonctionne pour la répartition des élèves sur différentes assises ? Par un planning... (1 mot).", codeReveal: "Lettre à débloquer : E"}
+  {step: 0, alert: "📻 Le Pilote doit consulter sa ressource papier pour trouver un indice important !", hint: "Sur votre fiche papier, section 'Aménagement et bien-être' : Cherchez ce qu'un aménagement flexible peut réduire chez les élèves. C'est un état émotionnel négatif en 2 mots.", clue: "💡 Indice : Cela commence par 'le s...' et concerne les émotions"},
+  {step: 1, alert: "📻 Le Pilote a accès à un schéma exclusif sur ses documents !", hint: "Dans votre document papier 'Organisation du projet' : Identifiez l'outil de planification du 1er degré utile au 2nd degré aussi. C'est un document avec 4 mots.", clue: "💡 Indice : 'le plan de ...' (complétez avec 2 mots)"},
+  {step: 2, alert: "📻 Le Pilote doit vérifier une information cruciale !", hint: "Consultez vos ressources papier sur le témoignage d'Amélie, enseignante de lettres. Elle donne un conseil sur les changements pédagogiques. Faut-il TOUT changer ?", clue: "💡 Indice : La réponse est 'oui' ou 'non' (3 lettres)"},
+  {step: 3, alert: "📻 Le Pilote a une photo exclusive dans ses documents !", hint: "Dans l'article Archiclasse (section témoignage d'Anne-Cécile Calléjon) : Trouvez le sport utilisé comme métaphore du travail d'équipe. C'est un sport d'hiver en 2 mots.", clue: "💡 Indice : 'le c...' - sport où on balaye la glace"},
+  {step: 4, alert: "📻 Le Pilote doit analyser un cas pratique sur sa fiche !", hint: "Dans votre document 'Gestion des nuisances et BEP' : Identifiez ce que le professeur laisse à l'élève BEP concernant son espace de travail (2 mots).", clue: "💡 Indice : 'le c...' de quelque chose (autonomie de décision)"},
+  {step: 5, alert: "📻 Dernière mission pour le Pilote !", hint: "Document sur la posture de l'enseignant : Comment Défine organise la répartition des élèves sur différentes assises ? Par un planning de quelle durée ? (1 mot)", clue: "💡 Indice : Commence par 'h...' (7 jours)"}
 ];
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -1100,12 +1101,12 @@ function addXP(amount) {
 }
 
 function checkBadgeUnlocks() {
-  if(state.step >= 1 && !badges.unlocked) unlockBadge(0);
-  if(state.xp >= 200 && !badges.unlocked) unlockBadge(1);
-  if(state.step >= 3 && !badges.unlocked) unlockBadge(2);
-  if(state.timeRemaining > 600 && state.step >= 3 && !badges.unlocked) unlockBadge(3);
-  if(state.step >= 6 && !badges.unlocked) unlockBadge(4);
-  if(state.bonusGranted && !badges.unlocked) unlockBadge(5);
+  if(state.step >= 1 && !badges[0].unlocked) unlockBadge(0);
+  if(state.xp >= 200 && !badges[1].unlocked) unlockBadge(1);
+  if(state.step >= 3 && !badges[2].unlocked) unlockBadge(2);
+  if(state.timeRemaining > 600 && state.step >= 3 && !badges[3].unlocked) unlockBadge(3);
+  if(state.step >= 6 && !badges[4].unlocked) unlockBadge(4);
+  if(state.bonusGranted && !badges[5].unlocked) unlockBadge(5);
 }
 
 function unlockBadge(index) {
@@ -1236,8 +1237,8 @@ function showPilotInterface(s, container) {
       <p><strong>Mission :</strong></p>
       <p>${hint.hint}</p>
     </div>
-    <div class="code-reveal">${hint.codeReveal}</div>
-    <p><em>💡 Communiquez cette information à votre équipe via le talkie-walkie !</em></p>
+    <div class="hint-emphasis">${hint.clue}</div>
+    <p><em>💡 Communiquez ces indices à votre équipe via le talkie-walkie pour les aider à trouver la réponse !</em></p>
   `;
   container.appendChild(pilotDiv);
   const codeDiv = document.createElement('div');
